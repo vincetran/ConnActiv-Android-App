@@ -2,24 +2,23 @@ package com.designs_1393.connactiv;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.app.ListActivity;
+import android.widget.EditText;
+import android.widget.Button;
 
-// actionbar
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
-
-public class connactiv extends ListActivity
+public class connactiv extends Activity
 {
+	EditText un, pw;
+	Button login;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.stream);
+        setContentView(R.layout.login);
 
-		// ----- actionbar -----
-		ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		actionBar.setTitle("ConnActiv Stream");
+		un = (EditText)findViewById(R.id.email);
+		pw = (EditText)findViewById(R.id.password);
+		login = (Button)findViewById(R.id.login_button);
     }
 }
