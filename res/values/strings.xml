@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">connactiv</string>
+	<string name="no_connactions">No ConnActions to display.  Why not add one?</string>
 </resources>

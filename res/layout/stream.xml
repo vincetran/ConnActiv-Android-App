@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	  xmlns:app="htp://schemas.android.com/apk/res/com.designatum_1393.textspansion"
+	  android:orientation="vertical"
+	  android:layout_width="fill_parent"
+	  android:layout_height="fill_parent">
+    <com.markupartist.android.widget.ActionBar
+	  android:id="@+id/actionbar"
+	  style="@style/ActionBar"
+	  />
+
+	<ListView android:id="@android:id/list"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"/>
+	<TextView android:id="@android:id/empty"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:text="@string/no_connactions"
+		android:textSize="17dp"
+		android:gravity="center_horizontal|center_vertical"/>
+</LinearLayout>

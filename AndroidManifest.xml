@@ -5,11 +5,12 @@
       android:versionName="1.0">
     <application android:label="@string/app_name" >
         <activity android:name="connactiv"
-                  android:label="@string/app_name">
+                  android:label="@string/app_name"
+				  android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
-</manifest> 
+</manifest>
