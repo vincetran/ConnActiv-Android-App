@@ -26,6 +26,13 @@ import android.net.http.AndroidHttpClient;
 import java.io.ByteArrayOutputStream;
 
 import android.content.Intent;
+import android.content.Context;
+
+import android.widget.Toast;
+
+// threading
+import android.os.AsyncTask;
+import java.lang.Void;
 
 // DBG
 import android.util.Log;
@@ -38,6 +45,7 @@ public class connactiv extends Activity
 	Button login;
 
 	final String TAG = "ConnActiv: connactiv";
+	Context ctx;
 
     /** Called when the activity is first created. */
     @Override
@@ -45,7 +53,7 @@ public class connactiv extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-
+		ctx = getApplicationContext();
 
 
 		email = (EditText)findViewById(R.id.email);
@@ -57,39 +65,49 @@ public class connactiv extends Activity
 			{
 				Log.i(TAG, "Login button pressed.");
 
-				try {
-					/* stackoverflow question 2999945 */
-					HttpPost post = new HttpPost("http://1393designs.com/ConnActiv/views/welcome.php");
-					post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
-					DefaultHttpClient client = new DefaultHttpClient(post.getParams());
-
-					List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
-					postParams.add(new BasicNameValuePair("login", "1"));
-					postParams.add(new BasicNameValuePair("username", email.getText().toString().trim()));
-					postParams.add(new BasicNameValuePair("pass", pw.getText().toString().trim()));
-
-					post.setEntity( new UrlEncodedFormEntity(postParams) );
-
-					BasicResponseHandler brh = new BasicResponseHandler();
-					HttpResponse response = client.execute( post );
-					String resp = brh.handleResponse( response );
-
-					if( resp.startsWith("1") )
-						Log.i(TAG, "Incorrect password.");
-					else if ( resp.startsWith("2") )
-						Log.i(TAG, "User does not exist");
-					else if ( resp.startsWith("3") )
-						Log.i(TAG, "Missing field.");
-					else if (resp.startsWith("0"))
-					{
-						startActivity(new Intent(getApplicationContext(), stream.class));
-						Log.i(TAG, "Successful Login!");
-						finish();
-					}
-				} catch (Exception e) {
-					Log.i(TAG, "ERROR: " +e.toString());
-				}
+				new loginTask().execute(email.getText().toString(), pw.getText().toString());
 			}
 		});
     }
+
+	private class loginTask extends AsyncTask<String, Void, Long>
+	{
+		protected Long doInBackground(String... strings)
+		{
+			try {
+				/* stackoverflow question 2999945 */
+				HttpPost post = new HttpPost("http://1393designs.com/ConnActiv/views/welcome.php");
+				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
+				DefaultHttpClient client = new DefaultHttpClient(post.getParams());
+
+				List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
+				postParams.add(new BasicNameValuePair("login", "1"));
+				postParams.add(new BasicNameValuePair("username", strings[0]));
+				postParams.add(new BasicNameValuePair("pass", strings[1]));
+
+				post.setEntity( new UrlEncodedFormEntity(postParams) );
+
+				BasicResponseHandler brh = new BasicResponseHandler();
+				HttpResponse response = client.execute( post );
+				String resp = brh.handleResponse( response );
+
+				if( resp.startsWith("1") )
+					Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
+				else if ( resp.startsWith("2") )
+					Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
+				else if ( resp.startsWith("3") )
+					Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
+				else if (resp.startsWith("0"))
+				{
+					startActivity(new Intent(getApplicationContext(), stream.class));
+					Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
+					finish();
+				}
+			} catch (Exception e) {
+				Log.i(TAG, "ERROR: " +e.toString());
+			}
+			return (long)0;
+		}
+	}
+
 }
