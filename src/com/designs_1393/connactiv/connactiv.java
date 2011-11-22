@@ -33,6 +33,7 @@ import android.widget.Toast;
 // threading
 import android.os.AsyncTask;
 import java.lang.Void;
+import java.util.concurrent.locks.ReentrantLock;
 
 // DBG
 import android.util.Log;
@@ -46,6 +47,9 @@ public class connactiv extends Activity
 
 	final String TAG = "ConnActiv: connactiv";
 	Context ctx;
+	ReentrantLock loginLock = new ReentrantLock();
+
+	String httpResponse = "";
 
     /** Called when the activity is first created. */
     @Override
@@ -64,16 +68,41 @@ public class connactiv extends Activity
 			public void onClick(View v)
 			{
 				Log.i(TAG, "Login button pressed.");
+				if( loginLock.tryLock() )
+				{
+					Log.i(TAG, "Login lock acquired");
+					loginTask task = new loginTask();
+					task.execute(email.getText().toString(), pw.getText().toString());
 
-				new loginTask().execute(email.getText().toString(), pw.getText().toString());
+					if( httpResponse.startsWith("1") )
+						Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
+					else if ( httpResponse.startsWith("2") )
+						Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
+					else if ( httpResponse.startsWith("3") )
+						Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
+					else if (httpResponse.startsWith("0"))
+					{
+						startActivity(new Intent(getApplicationContext(), stream.class));
+						Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
+						finish();
+					}
+
+					Log.i(TAG, "Login lock released");
+					try {
+						loginLock.unlock();
+					} catch (Exception e){
+						Log.i(TAG, "ERROR: " +e.toString());
+					}
+				}
 			}
 		});
     }
 
-	private class loginTask extends AsyncTask<String, Void, Long>
+	private class loginTask extends AsyncTask<String, Void, String>
 	{
-		protected Long doInBackground(String... strings)
+		protected String doInBackground(String... strings)
 		{
+			String resp = "";
 			try {
 				/* stackoverflow question 2999945 */
 				HttpPost post = new HttpPost("http://1393designs.com/ConnActiv/views/welcome.php");
@@ -89,24 +118,16 @@ public class connactiv extends Activity
 
 				BasicResponseHandler brh = new BasicResponseHandler();
 				HttpResponse response = client.execute( post );
-				String resp = brh.handleResponse( response );
-
-				if( resp.startsWith("1") )
-					Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
-				else if ( resp.startsWith("2") )
-					Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
-				else if ( resp.startsWith("3") )
-					Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
-				else if (resp.startsWith("0"))
-				{
-					startActivity(new Intent(getApplicationContext(), stream.class));
-					Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
-					finish();
-				}
+				resp = brh.handleResponse( response );
 			} catch (Exception e) {
 				Log.i(TAG, "ERROR: " +e.toString());
 			}
-			return (long)0;
+			return resp;
+		}
+
+		protected void onPostExecute(String result)
+		{
+			httpResponse = result;
 		}
 	}
 
