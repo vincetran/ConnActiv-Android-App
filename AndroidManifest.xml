@@ -12,6 +12,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+		<activity android:name="stream"
+				  android:label="ConnActiv Stream"
+				  android:theme="@android:style/Theme.NoTitleBar" />
     </application>
 	<uses-permission android:name="android.permission.INTERNET"/>
 </manifest>
