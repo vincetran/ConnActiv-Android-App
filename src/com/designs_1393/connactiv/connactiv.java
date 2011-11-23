@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.Button;
 import android.view.View;
+import android.widget.ProgressBar;
 
 // authentication
 // TODO: prune
@@ -44,6 +45,7 @@ public class connactiv extends Activity
 {
 	EditText email, pw;
 	Button login;
+	ProgressBar pb;
 
 	final String TAG = "ConnActiv: connactiv";
 	Context ctx;
@@ -63,6 +65,7 @@ public class connactiv extends Activity
 		email = (EditText)findViewById(R.id.email);
 		pw = (EditText)findViewById(R.id.password);
 		login = (Button)findViewById(R.id.login_button);
+		pb = (ProgressBar)findViewById(R.id.login_progress);
 		login.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v)
@@ -70,39 +73,31 @@ public class connactiv extends Activity
 				Log.i(TAG, "Login button pressed.");
 				if( loginLock.tryLock() )
 				{
+					pb.setVisibility(View.VISIBLE); // show spinner
 					Log.i(TAG, "Login lock acquired");
 					loginTask task = new loginTask();
 					task.execute(email.getText().toString(), pw.getText().toString());
 
-					if( httpResponse.startsWith("1") )
-						Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
-					else if ( httpResponse.startsWith("2") )
-						Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
-					else if ( httpResponse.startsWith("3") )
-						Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
-					else if (httpResponse.startsWith("0"))
-					{
-						startActivity(new Intent(getApplicationContext(), stream.class));
-						Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
-						finish();
-					}
-
-					Log.i(TAG, "Login lock released");
 					try {
+						Log.i(TAG, "Login lock released");
 						loginLock.unlock();
 					} catch (Exception e){
 						Log.i(TAG, "ERROR: " +e.toString());
 					}
+					/* NOTE: it hides so quickly that it never actually
+					 * appears, even on a 3G connection.  We protect against
+					 * ANR's, so this can remain to provide a user confirmation
+					 * that "the computer is thinking." */
+
 				}
 			}
 		});
     }
 
-	private class loginTask extends AsyncTask<String, Void, String>
+	private class loginTask extends AsyncTask<String, Void, Integer>
 	{
-		protected String doInBackground(String... strings)
+		protected Integer doInBackground(String... strings)
 		{
-			String resp = "";
 			try {
 				/* stackoverflow question 2999945 */
 				HttpPost post = new HttpPost("http://1393designs.com/ConnActiv/views/welcome.php");
@@ -118,16 +113,30 @@ public class connactiv extends Activity
 
 				BasicResponseHandler brh = new BasicResponseHandler();
 				HttpResponse response = client.execute( post );
-				resp = brh.handleResponse( response );
+				final String resp = brh.handleResponse( response );
+
+				runOnUiThread( new Runnable() {
+					public void run() {
+						pb.setVisibility(View.INVISIBLE); // hide spinner
+						if( resp.startsWith("1") )
+							Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
+						else if ( resp.startsWith("2") )
+							Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
+						else if ( resp.startsWith("3") )
+							Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
+						else if (resp.startsWith("0"))
+						{
+							startActivity(new Intent(getApplicationContext(), stream.class));
+							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
+							finish();
+						}
+					}
+				});
+
 			} catch (Exception e) {
 				Log.i(TAG, "ERROR: " +e.toString());
 			}
-			return resp;
-		}
-
-		protected void onPostExecute(String result)
-		{
-			httpResponse = result;
+			return 0;
 		}
 	}
 
