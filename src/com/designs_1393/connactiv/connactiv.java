@@ -26,6 +26,14 @@ import org.apache.http.params.CoreProtocolPNames;
 import android.net.http.AndroidHttpClient;
 import java.io.ByteArrayOutputStream;
 
+// cookies
+import android.webkit.CookieSyncManager;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.client.CookieStore;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.protocol.BasicHttpContext;
+
 import android.content.Intent;
 import android.content.Context;
 
@@ -52,6 +60,8 @@ public class connactiv extends Activity
 	ReentrantLock loginLock = new ReentrantLock();
 
 	String httpResponse = "";
+	CookieStore cs = new BasicCookieStore();
+	BasicHttpContext httpCtx = new BasicHttpContext();
 
     /** Called when the activity is first created. */
     @Override
@@ -60,6 +70,11 @@ public class connactiv extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 		ctx = getApplicationContext();
+		CookieSyncManager.createInstance(ctx);
+		CookieSyncManager.getInstance().startSync();
+		List<Cookie> cookieList = cs.getCookies();
+		for( Cookie c : cookieList )
+			Log.i(TAG, c.getName() );
 
 
 		email = (EditText)findViewById(R.id.email);
@@ -103,6 +118,7 @@ public class connactiv extends Activity
 				HttpPost post = new HttpPost("http://1393designs.com/ConnActiv/views/welcome.php");
 				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 				DefaultHttpClient client = new DefaultHttpClient(post.getParams());
+				client.setCookieStore(cs);
 
 				List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
 				postParams.add(new BasicNameValuePair("login", "1"));
@@ -112,7 +128,7 @@ public class connactiv extends Activity
 				post.setEntity( new UrlEncodedFormEntity(postParams) );
 
 				BasicResponseHandler brh = new BasicResponseHandler();
-				HttpResponse response = client.execute( post );
+				HttpResponse response = client.execute( post, httpCtx );
 				final String resp = brh.handleResponse( response );
 
 				runOnUiThread( new Runnable() {
@@ -126,6 +142,11 @@ public class connactiv extends Activity
 							Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
 						else if (resp.startsWith("0"))
 						{
+							CookieSyncManager.getInstance().sync();
+							List<Cookie> cookieList = cs.getCookies();
+							Log.i(TAG, "===== Cookie List =====");
+							for( Cookie c : cookieList )
+								Log.i(TAG, c.getName() );
 							startActivity(new Intent(getApplicationContext(), stream.class));
 							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
 							finish();
