@@ -47,8 +47,14 @@ import java.util.concurrent.locks.ReentrantLock;
 // DBG
 import android.util.Log;
 
-
-
+import java.net.URL;
+ 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+ 
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+ 
 public class connactiv extends Activity
 {
 	EditText email, pw;
@@ -92,6 +98,8 @@ public class connactiv extends Activity
 					Log.i(TAG, "Login lock acquired");
 					loginTask task = new loginTask();
 					task.execute(email.getText().toString(), pw.getText().toString());
+					
+					
 
 					try {
 						Log.i(TAG, "Login lock released");
@@ -147,7 +155,7 @@ public class connactiv extends Activity
 							Log.i(TAG, "===== Cookie List =====");
 							for( Cookie c : cookieList )
 								Log.i(TAG, c.getName() );
-							startActivity(new Intent(getApplicationContext(), stream.class));
+							//startActivity(new Intent(getApplicationContext(), stream.class));
 							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
 							finish();
 						}
