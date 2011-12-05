@@ -126,7 +126,7 @@ public class connactiv extends Activity
 		{
 			try {
 				/* stackoverflow question 2999945 */
-				HttpPost post = new HttpPost("http://connactiv.com/test/index.php");
+				HttpPost post = new HttpPost("http://connactiv.nfshost.com/test/index.php");
 				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 				DefaultHttpClient client = new DefaultHttpClient(post.getParams());
 				client.setCookieStore(cs);
@@ -145,22 +145,23 @@ public class connactiv extends Activity
 				runOnUiThread( new Runnable() {
 					public void run() {
 						pb.setVisibility(View.INVISIBLE); // hide spinner
-						if( resp.startsWith("1") )
+						if( resp.contains("Incorrect password"))
 							Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
-						else if ( resp.startsWith("2") )
+						else if ( resp.startsWith("Sorry, that user does not exist in our database.") )
 							Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
-						else if ( resp.startsWith("3") )
+						else if ( resp.startsWith("Oops.") )
 							Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
-						else if (resp.startsWith("0"))
+						else
 						{
 							CookieSyncManager.getInstance().sync();
 							List<Cookie> cookieList = cs.getCookies();
+							Log.i(TAG, resp);
 							Log.i(TAG, "===== Cookie List =====");
-							for( Cookie c : cookieList )
-								Log.i(TAG, c.getName() );
+							//for( Cookie c : cookieList )
+							//	Log.i(TAG, c.getName() );
 							//startActivity(new Intent(getApplicationContext(), stream.class));
 							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
-							finish();
+							//finish();
 						}
 					}
 				});
