@@ -3,6 +3,7 @@ package com.designs_1393.connactiv;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.graphics.Typeface;
 import android.widget.Button;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -84,7 +85,9 @@ public class connactiv extends Activity
 
 
 		email = (EditText)findViewById(R.id.email);
+		email.setTypeface(Typeface.DEFAULT);
 		pw = (EditText)findViewById(R.id.password);
+		pw.setTypeface(Typeface.DEFAULT);
 		login = (Button)findViewById(R.id.login_button);
 		pb = (ProgressBar)findViewById(R.id.login_progress);
 		login.setOnClickListener(new View.OnClickListener() {
@@ -123,7 +126,7 @@ public class connactiv extends Activity
 		{
 			try {
 				/* stackoverflow question 2999945 */
-				HttpPost post = new HttpPost("http://1393designs.com/ConnActiv/views/welcome.php");
+				HttpPost post = new HttpPost("http://connactiv.com/test/index.php");
 				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 				DefaultHttpClient client = new DefaultHttpClient(post.getParams());
 				client.setCookieStore(cs);
