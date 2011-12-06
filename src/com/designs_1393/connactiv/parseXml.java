@@ -4,66 +4,52 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.util.Log;
+import java.lang.Exception;
+import android.os.AsyncTask;
 
 //HTTP Stuff
 import android.widget.ProgressBar;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
 
 //XML Stuff
-import org.xml.sax.InputSource;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-import android.database.Cursor;
-import android.content.Intent;
-import android.widget.Toast;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Element;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 public class parseXml extends Activity
 {
-    private Element input;
-    private NodeList message;
+	ProgressBar pb;
 
-    ProgressBar pb;
-    TextView tv;
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.stream);
+		pb = (ProgressBar)findViewById(R.id.login_progress);
+		genXml task = new genXml();
+		task.execute();
+		
+	}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.stream);
-        pb = (ProgressBar)findViewById(R.id.login_progress);
-        tv = new TextView(this);
-
-        try{
-            URL url = new URL("http://connactiv.nfshost.com/test/android/genXML.php"); //This section isn't working
-            //genXML.php isn't being called. Perhaps using HTTP POST will work?
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            pb.setVisibility(View.VISIBLE);
-            URL xurl = new URL("http://connactiv.nfshost.com/test/android/database.xml");
-        
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder();
-            Document doc = builder.parse(new InputSource(xurl.openStream()));
-            input = doc.getDocumentElement();
-            message = input.getElementsByTagName("MESSAGE");
-
-        }catch(Exception e){}
-        
-        String output = "Empty";
-
-        // if (message.item(0).getFirstChild().getNodeValue() != "") {
-        //     output = message.item(0).getFirstChild().getNodeValue();
-        // }
-
-        //For whatever reason, message is being null right now.
-
-        tv.setText("XML: \n");
-    }
+	private class genXml extends AsyncTask<Void, Void, String>
+	{
+		protected String doInBackground(Void... params)
+		{
+			String resp = "";
+			try{
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpPost hp = new HttpPost("http://connactiv.nfshost.com/test/android/genXML.php");
+				HttpResponse response = httpclient.execute(hp); 
+				BasicResponseHandler brh = new BasicResponseHandler();
+				resp = brh.handleResponse( response );
+			}catch(Exception e){
+				Log.e("Connactiv - Parsing", "Error: "+e);
+			}
+			return resp;
+		}
+	}
 }

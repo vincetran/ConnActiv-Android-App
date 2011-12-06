@@ -15,10 +15,10 @@ import com.markupartist.android.widget.ActionBar.IntentAction;
 public class stream extends ListActivity
 {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.stream);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.stream);
+	}
 }
