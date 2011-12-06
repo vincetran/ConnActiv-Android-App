@@ -161,7 +161,6 @@ public class connactiv extends Activity
 								for( Cookie c : cookieList )
 								Log.i(TAG, c.getName() );
 								startActivity(new Intent(getApplicationContext(), parseXml.class));
-								//startActivity(new Intent(this, parseXml.class));
 								Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
 								finish();
 							}

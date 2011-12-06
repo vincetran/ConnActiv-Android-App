@@ -18,7 +18,8 @@
 		<activity android:name="stream"
 			android:label="ConnActiv Stream"
 			android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name="parseXml" android:label="Parsing"/>
+		<activity android:name="parseXml" android:label="Parsing"
+			android:theme="@android:style/Theme.NoTitleBar"/>
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

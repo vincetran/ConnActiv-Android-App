@@ -12,6 +12,6 @@ public class parsedDataSet{
 	}
 
 	public String toString(){
-		return "Extracted String = " + this.extString;
+		return this.extString;
 	}
 }

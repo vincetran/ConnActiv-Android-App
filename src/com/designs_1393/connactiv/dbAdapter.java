@@ -94,4 +94,23 @@ public class dbAdapter
 		mDbHelper.close();
 	}
 
+	public long createConnaction(String... params)
+	{
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(KEY_CID, params[0]);
+		initialValues.put(KEY_POST_TIME, params[1]);
+		initialValues.put(KEY_UID, params[2]);
+		initialValues.put(KEY_LOCATION, params[3]);
+		initialValues.put(KEY_START_DATE, params[4]);
+		initialValues.put(KEY_MESSAGE, params[5]);
+		initialValues.put(KEY_END_DATE, params[6]);
+		initialValues.put(KEY_UNID, params[7]);
+		initialValues.put(KEY_PRIVATE, params[8]);
+
+		if (mDb.query(CONNACTION_TABLE, new String[] {KEY_CID}, KEY_CID +"=?", new String[] {params[0]}, null, null, KEY_CID).getCount() != 0)	
+			return -1;
+		else
+			return mDb.insert(CONNACTION_TABLE, null, initialValues);
+	}
+
 }
