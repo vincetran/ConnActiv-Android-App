@@ -7,17 +7,18 @@ android:versionName="1.0">
 <uses-sdk android:targetSdkVersion="10" />
 
 <application android:label="ConnActiv" android:icon="@drawable/icon">
-<activity android:name="connactiv"
-android:label="ConnActiv"
-android:theme="@android:style/Theme.NoTitleBar">
-<intent-filter>
-<action android:name="android.intent.action.MAIN" />
-<category android:name="android.intent.category.LAUNCHER" />
-</intent-filter>
-</activity>
-<activity android:name="stream"
-android:label="ConnActiv Stream"
-android:theme="@android:style/Theme.NoTitleBar" />
+	<activity android:name="connactiv"
+		android:label="ConnActiv"
+		android:theme="@android:style/Theme.NoTitleBar">
+		<intent-filter>
+			<action android:name="android.intent.action.MAIN" />
+			<category android:name="android.intent.category.LAUNCHER" />
+		</intent-filter>
+	</activity>
+	<activity android:name="stream"
+		android:label="ConnActiv Stream"
+		android:theme="@android:style/Theme.NoTitleBar" />
+	<activity android:name="parseXml" android:label="Parsing"/>
 </application>
 <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

@@ -128,7 +128,7 @@ public class connactiv extends Activity
 				/* stackoverflow question 2999945 */
 				HttpPost post = new HttpPost("http://connactiv.nfshost.com/test/index.php");
 				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
-				DefaultHttpClient client = new DefaultHttpClient(post.getParams());
+				final DefaultHttpClient client = new DefaultHttpClient(post.getParams());
 				client.setCookieStore(cs);
 
 				List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
@@ -154,14 +154,14 @@ public class connactiv extends Activity
 						else
 						{
 							CookieSyncManager.getInstance().sync();
-							List<Cookie> cookieList = cs.getCookies();
-							Log.i(TAG, resp);
+							List<Cookie> cookieList = client.getCookieStore().getCookies();
 							Log.i(TAG, "===== Cookie List =====");
-							//for( Cookie c : cookieList )
-							//	Log.i(TAG, c.getName() );
-							//startActivity(new Intent(getApplicationContext(), stream.class));
+							for( Cookie c : cookieList )
+								Log.i(TAG, c.getName() );
+							startActivity(new Intent(getApplicationContext(), parseXml.class));
+							//startActivity(new Intent(this, parseXml.class));
 							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
-							//finish();
+							finish();
 						}
 					}
 				});
