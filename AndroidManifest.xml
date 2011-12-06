@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-package="com.designs_1393.connactiv"
-android:versionCode="1"
-android:versionName="1.0">
-<uses-sdk android:minSdkVersion="7" />
-<uses-sdk android:targetSdkVersion="10" />
+	package="com.designs_1393.connactiv"
+	android:versionCode="1"
+	android:versionName="1.0">
+	<uses-sdk android:minSdkVersion="7" />
+	<uses-sdk android:targetSdkVersion="10" />
 
-<application android:label="ConnActiv" android:icon="@drawable/icon">
-	<activity android:name="connactiv"
-		android:label="ConnActiv"
-		android:theme="@android:style/Theme.NoTitleBar">
-		<intent-filter>
-			<action android:name="android.intent.action.MAIN" />
-			<category android:name="android.intent.category.LAUNCHER" />
-		</intent-filter>
-	</activity>
-	<activity android:name="stream"
-		android:label="ConnActiv Stream"
-		android:theme="@android:style/Theme.NoTitleBar" />
-	<activity android:name="parseXml" android:label="Parsing"/>
-</application>
-<uses-permission android:name="android.permission.INTERNET"/>
+	<application android:label="ConnActiv" android:icon="@drawable/icon">
+		<activity android:name="connactiv"
+			android:label="ConnActiv"
+			android:theme="@android:style/Theme.NoTitleBar">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity android:name="stream"
+			android:label="ConnActiv Stream"
+			android:theme="@android:style/Theme.NoTitleBar" />
+		<activity android:name="parseXml" android:label="Parsing"/>
+	</application>
+	<uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

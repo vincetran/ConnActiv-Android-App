@@ -133,8 +133,10 @@ public class connactiv extends Activity
 
 					List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
 					postParams.add(new BasicNameValuePair("login", "1"));
-					postParams.add(new BasicNameValuePair("username", strings[0]));
-					postParams.add(new BasicNameValuePair("pass", strings[1]));
+					//postParams.add(new BasicNameValuePair("username", strings[0]));
+					//postParams.add(new BasicNameValuePair("pass", strings[1]));
+					postParams.add(new BasicNameValuePair("username", "freedom1378@gmail.com"));
+					postParams.add(new BasicNameValuePair("pass", "rawr1378"));
 
 					post.setEntity( new UrlEncodedFormEntity(postParams) );
 
