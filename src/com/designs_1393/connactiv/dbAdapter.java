@@ -26,7 +26,7 @@ public class dbAdapter
 	private SQLiteDatabase mDb;
 
 	private static final String DATABASE_CREATE =
-		"create table connactions (connaction_id integer not null, post_time text not null," 
+		"create table connaction (connaction_id integer not null, post_time text not null," 
 		+ " user_id integer not null, location text not null, start_date text not null, "
 		+ " message text not null,  end_date text not null,  unique_network_id text not null, "
 		+ " is_private text not null);";

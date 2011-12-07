@@ -62,7 +62,7 @@ public class connactiv extends Activity
 	Button login;
 	ProgressBar pb;
 
-	final String TAG = "ConnActiv: connactiv";
+	final String TAG = "ConnActiv";
 	Context ctx;
 	ReentrantLock loginLock = new ReentrantLock();
 

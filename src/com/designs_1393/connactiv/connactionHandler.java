@@ -32,7 +32,8 @@ public class connactionHandler extends DefaultHandler{
 	private String is_private = "";
 
 	private dbAdapter mDbHelper;
-	
+	private Context ctx;
+
 	private parsedDataSet myparsedDataSet = new parsedDataSet();
 
 	// ===========================================================
@@ -109,59 +110,63 @@ public class connactionHandler extends DefaultHandler{
 	/** Gets be called on the following structure: 
 	 * <tag>characters</tag> */
 	@Override
-    public void characters(char ch[], int start, int length) {
-    	if(this.in_connaction){
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		cid = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "Connaction ID: " + cid);
-    	}
+	public void characters(char ch[], int start, int length) {
+		if(this.in_connaction){
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			cid = myparsedDataSet.toString();
+			Log.i("ConnActiv", "Connaction ID: " + cid);
+		}
 		else if(this.in_post_time){
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		post_time = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "Post Time: " + post_time);
-    	}
-    	else if(this.in_user_id){
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		uid = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "User ID: " + uid);
-    	}
-    	else if(this.in_location){
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		location = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "Location: " + location);
-    	}
-    	else if(this.in_start_time){
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		start_time = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "Start Time: " + start_time);
-    	}
-    	else if(this.in_message){
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		message = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "Message: " + message);
-    	}
-    	else if(this.in_end_time){
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		end_time = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "End Time: " + end_time);
-    	}
-    	else if(this.in_unique){
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		unique = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "Unique: " + unique);
-    	}
-    	else if(this.in_private){
-    		mDbHelper = new dbAdapter(getApplicationContext());
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			post_time = myparsedDataSet.toString();
+			Log.i("ConnActiv", "Post Time: " + post_time);
+		}
+		else if(this.in_user_id){
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			uid = myparsedDataSet.toString();
+			Log.i("ConnActiv", "User ID: " + uid);
+		}
+		else if(this.in_location){
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			location = myparsedDataSet.toString();
+			Log.i("ConnActiv", "Location: " + location);
+		}
+		else if(this.in_start_time){
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			start_time = myparsedDataSet.toString();
+			Log.i("ConnActiv", "Start Time: " + start_time);
+		}
+		else if(this.in_message){
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			message = myparsedDataSet.toString();
+			Log.i("ConnActiv", "Message: " + message);
+		}
+		else if(this.in_end_time){
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			end_time = myparsedDataSet.toString();
+			Log.i("ConnActiv", "End Time: " + end_time);
+		}
+		else if(this.in_unique){
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			unique = myparsedDataSet.toString();
+			Log.i("ConnActiv", "Unique: " + unique);
+		}
+		else if(this.in_private){
+			mDbHelper = new dbAdapter(ctx);
 			mDbHelper.open();
 
-    		myparsedDataSet.setExtString(new String(ch, start, length));
-    		is_private = myparsedDataSet.toString();
-    		Log.i("Connactiv - CAH", "Private Bool: " + is_private);
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			is_private = myparsedDataSet.toString();
+			Log.i("ConnActiv", "Private Bool: " + is_private);
 
-    		mDbHelper.createConnaction(cid, post_time, uid, location, start_time, message, 
-    			end_time, unique, is_private);
+			mDbHelper.createConnaction(cid, post_time, uid, location, start_time, message, 
+				end_time, unique, is_private);
 
-    		mDbHelper.close();
-    	}
-    }
+			mDbHelper.close();
+		}
+	}
+
+	public void setContext(Context ctx){
+		this.ctx = ctx;
+	}
 }

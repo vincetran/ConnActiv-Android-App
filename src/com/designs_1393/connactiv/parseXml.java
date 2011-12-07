@@ -49,21 +49,19 @@ public class parseXml extends Activity
 		ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
 		actionBar.setTitle("Parsing XML...");
 
-		pb = (ProgressBar)findViewById(R.id.login_progress);
 		genXml gen = new genXml();
 		gen.execute(generate);
 
 		genXml pullXml = new genXml();
 		pullXml.execute(pull);
+
 		tv.setText(messageXml);
-
 		setContentView(tv);
-
 	}
 
-	private class genXml extends AsyncTask<String, Void, String>
+	private class genXml extends AsyncTask<String, Void, Integer>
 	{
-		protected String doInBackground(String... params)
+		protected Integer doInBackground(String... params)
 		{
 			if(params[0].compareTo("generate") == 0)
 			{
@@ -75,7 +73,7 @@ public class parseXml extends Activity
 					BasicResponseHandler brh = new BasicResponseHandler();
 					resp = brh.handleResponse( response );
 				}catch(Exception e){
-					Log.e("Connactiv - Parsing", "Error: "+e);
+					Log.e("Connactiv", "Error: "+e);
 				}
 			}
 			else if(params[0].compareTo("pull")==0){
@@ -85,19 +83,15 @@ public class parseXml extends Activity
 					SAXParser sp = spf.newSAXParser();
 					XMLReader xr = sp.getXMLReader();
 					connactionHandler caHandler = new connactionHandler();
+					caHandler.setContext(getApplicationContext());
 
 					xr.setContentHandler(caHandler);
 					xr.parse(new InputSource(url.openStream()));
-
-					parsedDataSet parsedData = caHandler.getParsedData();
-					messageXml = parsedData.toString();
-					return messageXml;
-
 				}catch(Exception e){
-					Log.i("ConnActiv Parsing", "ERRRRROR: " + e);
+					Log.i("ConnActiv", "ERRRRROR: " + e);
 				}
 			}
-			return "finish";
+			return 0;
 		}
 	}
 }
