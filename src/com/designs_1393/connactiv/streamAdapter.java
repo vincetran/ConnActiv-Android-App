@@ -1,4 +1,4 @@
-package com.designatum_1393.textspansion;
+package com.designs_1393.connactiv;
 
 import android.database.Cursor;
 import android.widget.TextView;
@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 
-public class privitized_adapter extends CursorAdapter
+public class streamAdapter extends CursorAdapter
 {
 	public static final String KEY_CID = "connaction_id";
 	public static final String KEY_POST_TIME = "post_time";
@@ -22,7 +22,7 @@ public class privitized_adapter extends CursorAdapter
 	public static final String KEY_UNID = "unique_network_id";
 	public static final String KEY_PRIVATE = "is_private";
 
-	public privitized_adapter(Context context, Cursor c)
+	public streamAdapter(Context context, Cursor c)
 	{
 		super(context, c);
 	}
@@ -30,7 +30,7 @@ public class privitized_adapter extends CursorAdapter
 	@Override
 	public View newView(Context context, Cursor c, ViewGroup viewGroup)
 	{
-		return LayoutInflater.from(context).inflate(layout, viewGroup, false);
+		return LayoutInflater.from(context).inflate(R.layout.stream_item, viewGroup, false);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class privitized_adapter extends CursorAdapter
 		TextView vLoc  = (TextView) v.findViewById( R.id.location );
 		TextView vStart= (TextView) v.findViewById( R.id.startDate );
 		TextView vEnd  = (TextView) v.findViewById( R.id.endDate );
-		TextView vMess = (TextView) v.findViewById( R.id.Message );
+		TextView vMess = (TextView) v.findViewById( R.id.message );
 		TextView vNet  = (TextView) v.findViewById( R.id.networkID );
 
 		vTime.setText(  c.getString( c.getColumnIndexOrThrow( KEY_POST_TIME ) ) );

@@ -8,12 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
-public class dbAdapter 
+public class dbAdapter
 {
 
 	public static final String KEY_CID = "connaction_id";
 	public static final String KEY_POST_TIME = "post_time";
-	public static final String KEY_UID = "user_id"; 
+	public static final String KEY_UID = "user_id";
 	public static final String KEY_LOCATION = "location";
 	public static final String KEY_START_DATE = "start_date";
 	public static final String KEY_MESSAGE = "message";
@@ -26,7 +26,7 @@ public class dbAdapter
 	private SQLiteDatabase mDb;
 
 	private static final String DATABASE_CREATE =
-		"create table connaction (connaction_id integer not null, post_time text not null," 
+		"create table connaction (connaction_id integer primary key, post_time text not null,"
 		+ " user_id integer not null, location text not null, start_date text not null, "
 		+ " message text not null,  end_date text not null,  unique_network_id text not null, "
 		+ " is_private text not null);";
@@ -42,7 +42,7 @@ public class dbAdapter
 	/**
 	 * Class constructor.  Retains calling application's context, so that it
 	 * can be used in additional functions.
-	 * 
+	 *
 	 * @param ctx	Calling application's context
 	 */
 	public dbAdapter(Context ctx)
@@ -53,10 +53,10 @@ public class dbAdapter
 
 	/**
 	 * Inner class providing a database upgrade process.
-	 */	
+	 */
 	private static class DatabaseHelper extends SQLiteOpenHelper
 	{
-		DatabaseHelper(Context context) 
+		DatabaseHelper(Context context)
 		{
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
@@ -66,11 +66,11 @@ public class dbAdapter
 		{
 			db.execSQL(DATABASE_CREATE);
 		}
-		
+
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 		{
-			
+
 		}
 	}
 
@@ -107,7 +107,7 @@ public class dbAdapter
 		initialValues.put(KEY_UNID, params[7]);
 		initialValues.put(KEY_PRIVATE, params[8]);
 
-		if (mDb.query(CONNACTION_TABLE, new String[] {KEY_CID}, KEY_CID +"=?", new String[] {params[0]}, null, null, KEY_CID).getCount() != 0)	
+		if (mDb.query(CONNACTION_TABLE, new String[] {KEY_CID}, KEY_CID +"=?", new String[] {params[0]}, null, null, KEY_CID).getCount() != 0)
 			return -1;
 		else
 			return mDb.insert(CONNACTION_TABLE, null, initialValues);
