@@ -8,11 +8,9 @@ import android.util.Log;
 import java.lang.Exception;
 import android.os.AsyncTask;
 import java.lang.String;
-
-//Actionbar
-import com.markupartist.android.widget.ActionBar;
-import com.markupartist.android.widget.ActionBar.Action;
-import com.markupartist.android.widget.ActionBar.IntentAction;
+import android.content.Context;
+import android.content.Intent;
+import java.util.concurrent.locks.ReentrantLock;
 
 //HTTP Stuff
 import android.widget.ProgressBar;
@@ -37,6 +35,8 @@ public class parseXml extends Activity
 	private static final String generate = "generate";
 	private static final String pull = "pull";
 	private String messageXml = "";
+	private ReentrantLock xmlLock = new ReentrantLock();
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -46,17 +46,23 @@ public class parseXml extends Activity
 
 		tv = new TextView(this);
 
-		ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
-		actionBar.setTitle("Parsing XML...");
-
 		genXml gen = new genXml();
 		gen.execute(generate);
 
-		genXml pullXml = new genXml();
-		pullXml.execute(pull);
+		if( xmlLock.tryLock() )
+		{
+			genXml pullXml = new genXml();
+			pullXml.execute(pull);
 
-		tv.setText(messageXml);
-		setContentView(tv);
+			try {
+				xmlLock.unlock();
+			} catch (Exception e){
+				Log.i("ConnActiv", "ERROR: " +e.toString());
+			}
+		}
+
+		startActivity(new Intent(getApplicationContext(), stream.class));
+		finish();
 	}
 
 	private class genXml extends AsyncTask<String, Void, Integer>

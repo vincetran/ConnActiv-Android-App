@@ -113,4 +113,10 @@ public class dbAdapter
 			return mDb.insert(CONNACTION_TABLE, null, initialValues);
 	}
 
+	public Cursor fetchAllConnactions()
+	{
+		return mDb.query(CONNACTION_TABLE, new String[] {KEY_POST_TIME, KEY_UID,
+			KEY_LOCATION, KEY_START_DATE, KEY_MESSAGE, KEY_END_DATE, KEY_UNID}, null, null, null, null, KEY_CID);
+	}
+
 }
