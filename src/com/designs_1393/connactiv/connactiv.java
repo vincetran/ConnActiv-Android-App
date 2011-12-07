@@ -94,18 +94,15 @@ public class connactiv extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				Log.i(TAG, "Login button pressed.");
 				if( loginLock.tryLock() )
 				{
 					pb.setVisibility(View.VISIBLE); // show spinner
-					Log.i(TAG, "Login lock acquired");
 					loginTask task = new loginTask();
 					task.execute(email.getText().toString(), pw.getText().toString());
 					
 					
 
 					try {
-						Log.i(TAG, "Login lock released");
 						loginLock.unlock();
 					} catch (Exception e){
 						Log.i(TAG, "ERROR: " +e.toString());
