@@ -133,16 +133,17 @@ public class stream extends ListActivity
 					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
 					hp.setEntity( new UrlEncodedFormEntity(postParams) );
 
-					HttpResponse response = httpclient.execute(hp); 
-					BasicResponseHandler brh = new BasicResponseHandler();
-					resp = brh.handleResponse( response );
+					httpclient.execute(hp); 
+
 				}catch(Exception e){
 					Log.e("Connactiv", "Error: "+e);
 				}
 			}
 			else if(params[0].compareTo("pull")==0){
 				try{
-					URL url = new URL("http://connactiv.com/test/android/connactionDb.xml");
+					prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
+					URL url = new URL("http://connactiv.com/test/android/"+prefs.getString("userId","error")+"connactionDb.xml");
+
 					SAXParserFactory spf = SAXParserFactory.newInstance();
 					SAXParser sp = spf.newSAXParser();
 					XMLReader xr = sp.getXMLReader();
@@ -151,6 +152,13 @@ public class stream extends ListActivity
 
 					xr.setContentHandler(caHandler);
 					xr.parse(new InputSource(url.openStream()));
+
+					HttpClient httpclient = new DefaultHttpClient();
+					HttpPost hp = new HttpPost("http://connactiv.com/test/android/deleteXML.php");
+					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
+					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
+					hp.setEntity( new UrlEncodedFormEntity(postParams) );
+					httpclient.execute(hp); 
 				}catch(Exception e){
 					Log.i("ConnActiv", "ERRRRROR: " + e);
 				}
