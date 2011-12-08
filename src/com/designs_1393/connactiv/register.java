@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.util.Log;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.content.SharedPreferences;
 
 // authentication
@@ -133,7 +134,6 @@ public class register extends Activity
 				final DefaultHttpClient client = new DefaultHttpClient(post.getParams());
 
 				List<NameValuePair> postParams = new ArrayList<NameValuePair>(9);
-				//postParams.add(new BasicNameValuePair("login", "1"));
 				postParams.add(new BasicNameValuePair("username", strings[0]));
 				postParams.add(new BasicNameValuePair("firstName", strings[1]));
 				postParams.add(new BasicNameValuePair("lastName", strings[2]));
@@ -145,10 +145,21 @@ public class register extends Activity
 				postParams.add(new BasicNameValuePair("confirm", strings[8]));
 
 				post.setEntity( new UrlEncodedFormEntity(postParams) );
-
+				/* Commenting to test the next part
 				BasicResponseHandler brh = new BasicResponseHandler();
 				HttpResponse response = client.execute( post, httpCtx );
 				final String resp = brh.handleResponse( response );
+				*/
+
+				//BRAOIHFOAH WAT?
+				HttpPost getNetworks = new HttpPost("http://connactiv.com/test/android/getNetworks.php");
+				final DefaultHttpClient client2 = new DefaultHttpClient(getNetworks.getParams());
+				BasicResponseHandler brh2 = new BasicResponseHandler();
+				HttpResponse response2 = client.execute( post, httpCtx );
+				final String resp2 = brh2.handleResponse( response2 );
+
+				Log.i("ConnActiv", resp2);
+				
 
 				runOnUiThread( new Runnable() {
 					public void run() {
