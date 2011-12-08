@@ -14,10 +14,7 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name="stream"
-			android:label="Stream"/>
-
-		<activity android:name="parseXml" android:label="Parsing"/>
+		<activity android:name="stream" android:label="Stream"/>
 
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"/>
