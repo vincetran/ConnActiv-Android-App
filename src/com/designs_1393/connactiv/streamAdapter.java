@@ -9,6 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import android.util.Log;
 
 public class streamAdapter extends CursorAdapter
@@ -22,6 +26,9 @@ public class streamAdapter extends CursorAdapter
 	public static final String KEY_END_DATE = "end_date";
 	public static final String KEY_UNID = "unique_network_id";
 	public static final String KEY_PRIVATE = "is_private";
+
+	DateFormat oldDF = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+	DateFormat newDF = new SimpleDateFormat("MM'/'dd'/'yy' @ 'HH:mm");
 
 	public streamAdapter(Context context, Cursor c)
 	{
@@ -48,10 +55,16 @@ public class streamAdapter extends CursorAdapter
 		vTime.setText("Post Date: " + c.getString( c.getColumnIndexOrThrow(KEY_POST_TIME )));
 		vUser.setText("User: " + c.getString( c.getColumnIndexOrThrow(KEY_UID )) + "  |  ");
 		vLoc.setText(c.getString(c.getColumnIndexOrThrow(KEY_LOCATION )) + " | ");
-		vStart.setText(c.getString(c.getColumnIndexOrThrow(KEY_START_DATE))+ " | ");
-		vEnd.setText(c.getString(c.getColumnIndexOrThrow(KEY_END_DATE)));
+
 		vMess.setText(c.getString(c.getColumnIndexOrThrow(KEY_MESSAGE)));
 		vNet.setText("Tag: " + c.getString(c.getColumnIndexOrThrow(KEY_UNID)));
+
+		try {
+			vStart.setText(newDF.format( oldDF.parse( c.getString(c.getColumnIndexOrThrow(KEY_START_DATE))+ " | ") ) );
+			vEnd.setText(newDF.format( oldDF.parse( c.getString(c.getColumnIndexOrThrow(KEY_END_DATE))) ) );
+		} catch (Exception e){
+			Log.i("ConnActiv", "STREAM ADAPTER - error parsing Dates/Times");
+		}
 
 		Log.i("ConnActiv", "STREAM ADAPTER - vUser is: " + vUser.getText());
 	}
