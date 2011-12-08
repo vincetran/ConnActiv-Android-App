@@ -7,10 +7,14 @@ import android.widget.TextView;
 import android.util.Log;
 import java.lang.Exception;
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import java.lang.String;
 import android.content.Context;
 import android.content.Intent;
 import java.util.concurrent.locks.ReentrantLock;
+import android.preference.PreferenceManager;
+import android.content.SharedPreferences;
+import android.util.Log;
 
 //HTTP Stuff
 import android.widget.ProgressBar;
@@ -20,6 +24,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
+import java.util.List;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.HttpEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import java.util.ArrayList;
 
 //XML Stuff
 import javax.xml.parsers.SAXParser;
@@ -36,31 +47,34 @@ public class parseXml extends Activity
 	private static final String pull = "pull";
 	private String messageXml = "";
 	private ReentrantLock xmlLock = new ReentrantLock();
-
+	private SharedPreferences prefs;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.parse);
+		
 
 		tv = new TextView(this);
 
 		genXml gen = new genXml();
 		gen.execute(generate);
 
-		if( xmlLock.tryLock() )
+		/*
+		while(gen.getStatus() == AsyncTask.Status.RUNNING)
 		{
-			genXml pullXml = new genXml();
-			pullXml.execute(pull);
-
-			try {
-				xmlLock.unlock();
-			} catch (Exception e){
-				Log.i("ConnActiv", "ERROR: " +e.toString());
-			}
+			//Run some code
 		}
-
+		*/
+		genXml pullXml = new genXml();
+		pullXml.execute(pull);
+		/*
+		while(pullXml.getStatus() == AsyncTask.Status.RUNNING)
+		{
+			//Run some code
+		}
+		*/
 		startActivity(new Intent(getApplicationContext(), stream.class));
 		finish();
 	}
@@ -73,11 +87,23 @@ public class parseXml extends Activity
 			{
 				String resp = "";
 				try{
+					prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
+
 					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost hp = new HttpPost("http://connactiv.nfshost.com/test/android/genXML.php");
+					HttpPost hp = new HttpPost("http://connactiv.com/test/android/genXML.php");
+
+					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
+					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
+					hp.setEntity( new UrlEncodedFormEntity(postParams) );
+
 					HttpResponse response = httpclient.execute(hp); 
 					BasicResponseHandler brh = new BasicResponseHandler();
 					resp = brh.handleResponse( response );
+
+					//WE REALLY SHOULDN'T USE THIS BECAUSE IT'S SO BAD
+					//while(resp.compareTo("Success") != 0)
+					//{}
+					//LIKE SERIOUSLY. BAD.
 				}catch(Exception e){
 					Log.e("Connactiv", "Error: "+e);
 				}
@@ -99,5 +125,6 @@ public class parseXml extends Activity
 			}
 			return 0;
 		}
+
 	}
 }

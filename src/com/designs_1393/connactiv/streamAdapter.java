@@ -65,7 +65,5 @@ public class streamAdapter extends CursorAdapter
 		} catch (Exception e){
 			Log.i("ConnActiv", "STREAM ADAPTER - error parsing Dates/Times");
 		}
-
-		Log.i("ConnActiv", "STREAM ADAPTER - vUser is: " + vUser.getText());
 	}
 }

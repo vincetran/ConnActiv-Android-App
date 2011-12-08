@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.util.Log;
+import android.preference.PreferenceManager;
+import android.content.SharedPreferences;
 
 // authentication
 // TODO: prune
@@ -67,6 +69,8 @@ public class connactiv extends Activity
 	CookieStore cs = new BasicCookieStore();
 	BasicHttpContext httpCtx = new BasicHttpContext();
 
+	private SharedPreferences prefs;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -114,58 +118,65 @@ public class connactiv extends Activity
 		});
 	}
 
-		private class loginTask extends AsyncTask<String, Void, Integer>
+	private class loginTask extends AsyncTask<String, Void, Integer>
+	{
+		protected Integer doInBackground(String... strings)
 		{
-			protected Integer doInBackground(String... strings)
-			{
-				try {
-					/* stackoverflow question 2999945 */
-					HttpPost post = new HttpPost("http://connactiv.nfshost.com/test/index.php");
-					post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
-					final DefaultHttpClient client = new DefaultHttpClient(post.getParams());
-					client.setCookieStore(cs);
+			try {
+				/* stackoverflow question 2999945 */
+				HttpPost post = new HttpPost("http://connactiv.com/test/android/signin.php");
+				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
+				final DefaultHttpClient client = new DefaultHttpClient(post.getParams());
+				//client.setCookieStore(cs);
 
-					List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
-					postParams.add(new BasicNameValuePair("login", "1"));
-					//postParams.add(new BasicNameValuePair("username", strings[0]));
-					//postParams.add(new BasicNameValuePair("pass", strings[1]));
-					postParams.add(new BasicNameValuePair("username", "freedom1378@gmail.com"));
-					postParams.add(new BasicNameValuePair("pass", "rawr1378"));
+				List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
+				postParams.add(new BasicNameValuePair("login", "1"));
+				//postParams.add(new BasicNameValuePair("username", strings[0]));
+				//postParams.add(new BasicNameValuePair("pass", strings[1]));
+				postParams.add(new BasicNameValuePair("username", "freedom1378@gmail.com"));
+				postParams.add(new BasicNameValuePair("pass", "rawr1378"));
 
-					post.setEntity( new UrlEncodedFormEntity(postParams) );
+				post.setEntity( new UrlEncodedFormEntity(postParams) );
 
-					BasicResponseHandler brh = new BasicResponseHandler();
-					HttpResponse response = client.execute( post, httpCtx );
-					final String resp = brh.handleResponse( response );
+				BasicResponseHandler brh = new BasicResponseHandler();
+				HttpResponse response = client.execute( post, httpCtx );
+				final String resp = brh.handleResponse( response );
 
-					runOnUiThread( new Runnable() {
-						public void run() {
-							pb.setVisibility(View.INVISIBLE); // hide spinner
-							if( resp.contains("Incorrect password"))
-								Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
-							else if ( resp.startsWith("Sorry, that user does not exist in our database.") )
-								Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
-							else if ( resp.startsWith("Oops.") )
-								Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
-							else
-							{
-								CookieSyncManager.getInstance().sync();
-								List<Cookie> cookieList = client.getCookieStore().getCookies();
-								Log.i(TAG, "===== Cookie List =====");
-								for( Cookie c : cookieList )
-								Log.i(TAG, c.getName() );
-								startActivity(new Intent(getApplicationContext(), parseXml.class));
-								Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
-								finish();
-							}
+				runOnUiThread( new Runnable() {
+					public void run() {
+						pb.setVisibility(View.INVISIBLE); // hide spinner
+						if( resp.contains("Incorrect password"))
+							Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
+						else if ( resp.startsWith("Sorry, that user does not exist in our database.") )
+							Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
+						else if ( resp.startsWith("Oops.") )
+							Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
+						else
+						{
+							/*CookieSyncManager.getInstance().sync();
+							List<Cookie> cookieList = client.getCookieStore().getCookies();
+							Log.i(TAG, "===== Cookie List =====");
+							for( Cookie c : cookieList )
+							Log.i(TAG, c.getName() );
+							*/		
+							//userid = resp
+							prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
+							SharedPreferences.Editor editor = prefs.edit();
+							editor.putString("userId", resp);
+							editor.commit();
+
+							startActivity(new Intent(getApplicationContext(), parseXml.class));
+							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
+							finish();
 						}
-						});
-
-					} catch (Exception e) {
-						Log.i(TAG, "ERROR: " +e.toString());
 					}
-					return 0;
-				}
-			}
+					});
 
+				} catch (Exception e) {
+					Log.i(TAG, "ERROR: " +e.toString());
+				}
+				return 0;
+			}
 		}
+
+}
