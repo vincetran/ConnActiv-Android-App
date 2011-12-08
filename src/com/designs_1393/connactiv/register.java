@@ -53,6 +53,7 @@ public class register extends Activity
 {
 	private EditText email, fName, lName, city, zip, phone, bio, pass, cPass;
 	private Button next;
+	private SharedPreferences prefs;
 	ProgressBar pb;
 
 	final String TAG = "ConnActiv";
@@ -145,21 +146,10 @@ public class register extends Activity
 				postParams.add(new BasicNameValuePair("confirm", strings[8]));
 
 				post.setEntity( new UrlEncodedFormEntity(postParams) );
-				/* Commenting to test the next part
+				Commenting to test the next part
 				BasicResponseHandler brh = new BasicResponseHandler();
 				HttpResponse response = client.execute( post, httpCtx );
-				final String resp = brh.handleResponse( response );
-				*/
-
-				//BRAOIHFOAH WAT?
-				HttpPost getNetworks = new HttpPost("http://connactiv.com/test/android/getNetworks.php");
-				final DefaultHttpClient client2 = new DefaultHttpClient(getNetworks.getParams());
-				BasicResponseHandler brh2 = new BasicResponseHandler();
-				HttpResponse response2 = client.execute( post, httpCtx );
-				final String resp2 = brh2.handleResponse( response2 );
-
-				Log.i("ConnActiv", resp2);
-				
+				final String resp = brh.handleResponse( response );				
 
 				runOnUiThread( new Runnable() {
 					public void run() {
@@ -170,7 +160,16 @@ public class register extends Activity
 							Toast.makeText(ctx, resp, Toast.LENGTH_SHORT).show();
 						else if(resp.contains("The passwords do not match, please re-enter your information"))
 							Toast.makeText(ctx, resp, Toast.LENGTH_SHORT).show();
+						else
+						{
+							prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
+							SharedPreferences.Editor editor = prefs.edit();
+							editor.putString("userId", resp);
+							editor.commit();
 
+							startActivity(new Intent(getApplicationContext(), registerPart2.class));
+							finish();
+						}
 					}
 				});
 

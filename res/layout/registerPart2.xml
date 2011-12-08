@@ -76,7 +76,7 @@
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
 		android:singleLine="true"
-		android:imeOptions="actionDone"
+		android:imeOptions="actionNext"
 		android:password="true"
 		android:hint="@string/password_confirm" />
 	<ProgressBar
