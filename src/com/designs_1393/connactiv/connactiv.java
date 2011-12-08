@@ -151,19 +151,12 @@ public class connactiv extends Activity
 							Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
 						else
 						{
-							/*CookieSyncManager.getInstance().sync();
-							List<Cookie> cookieList = client.getCookieStore().getCookies();
-							Log.i(TAG, "===== Cookie List =====");
-							for( Cookie c : cookieList )
-							Log.i(TAG, c.getName() );
-							*/		
-							//userid = resp
 							prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
 							SharedPreferences.Editor editor = prefs.edit();
 							editor.putString("userId", resp);
 							editor.commit();
 
-							startActivity(new Intent(getApplicationContext(), parseXml.class));
+							startActivity(new Intent(getApplicationContext(), stream.class));
 							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
 							finish();
 						}
