@@ -48,72 +48,70 @@ import android.os.AsyncTask;
 import java.lang.Void;
 import java.util.concurrent.locks.ReentrantLock;
 
-// XML
-import java.net.URL;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
-public class connactiv extends Activity
+public class register extends Activity
 {
-	EditText email, pw;
-	private Button login;
-	private Button register;
+	private EditText email, fName, lName, city, zip, phone, bio, pass, cPass;
+	private Button next;
 	ProgressBar pb;
 
 	final String TAG = "ConnActiv";
 	Context ctx;
-	ReentrantLock loginLock = new ReentrantLock();
+	ReentrantLock regLock = new ReentrantLock();
 
 	String httpResponse = "";
-	CookieStore cs = new BasicCookieStore();
 	BasicHttpContext httpCtx = new BasicHttpContext();
 
-	private SharedPreferences prefs;
-
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.login);
+		setContentView(R.layout.register);
 		ctx = getApplicationContext();
-		CookieSyncManager.createInstance(ctx);
-		CookieSyncManager.getInstance().startSync();
-		List<Cookie> cookieList = cs.getCookies();
-		for( Cookie c : cookieList )
-		Log.i(TAG, c.getName() );
-
-
-		email = (EditText)findViewById(R.id.email);
-		email.setTypeface(Typeface.DEFAULT);
-		pw = (EditText)findViewById(R.id.password);
-		pw.setTypeface(Typeface.DEFAULT);
-		login = (Button)findViewById(R.id.login_button);
-		register = (Button)findViewById(R.id.register_button);
-
 		pb = (ProgressBar)findViewById(R.id.login_progress);
-		login.setOnClickListener(new View.OnClickListener() {
+
+		email = (EditText)findViewById(R.id.reg_email);
+		email.setTypeface(Typeface.DEFAULT);
+		fName = (EditText)findViewById(R.id.reg_first_name);
+		fName.setTypeface(Typeface.DEFAULT);
+		lName = (EditText)findViewById(R.id.reg_last_name);
+		lName.setTypeface(Typeface.DEFAULT);
+		city = (EditText)findViewById(R.id.reg_city);
+		city.setTypeface(Typeface.DEFAULT);
+		zip = (EditText)findViewById(R.id.reg_zip);
+		zip.setTypeface(Typeface.DEFAULT);
+		phone = (EditText)findViewById(R.id.reg_phone_number);
+		phone.setTypeface(Typeface.DEFAULT);
+		bio = (EditText)findViewById(R.id.reg_bio);
+		bio.setTypeface(Typeface.DEFAULT);
+		pass = (EditText)findViewById(R.id.reg_password);
+		pass.setTypeface(Typeface.DEFAULT);
+		cPass = (EditText)findViewById(R.id.reg_password_confirm);
+		cPass.setTypeface(Typeface.DEFAULT);
+
+		next = (Button)findViewById(R.id.next_button);
+
+		next.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v)
 			{
-				if( loginLock.tryLock() )
+				if( regLock.tryLock() )
 				{
-					if(email.getText().toString().compareTo("") == 0 || pw.getText().toString().compareTo("") == 0)
+					/*if(email.getText().toString().compareTo("") == 0 || pw.getText().toString().compareTo("") == 0)
 						Toast.makeText(ctx, "All fields are required", Toast.LENGTH_SHORT).show();
 					else
-					{
+					{*/
 						pb.setVisibility(View.VISIBLE); // show spinner
-						loginTask task = new loginTask();
-						task.execute(email.getText().toString(), pw.getText().toString());
+						regTask task = new regTask();
+						task.execute(email.getText().toString(), fName.getText().toString(), lName.getText().toString(),
+							city.getText().toString(), zip.getText().toString(), phone.getText().toString(), 
+							bio.getText().toString(), pass.getText().toString(), cPass.getText().toString());
 
 						try {
-							loginLock.unlock();
+							regLock.unlock();
 						} catch (Exception e){
 							Log.i(TAG, "ERROR: " +e.toString());
 						}
-					}
+					//}
 					/* NOTE: it hides so quickly that it never actually
 					* appears, even on a 3G connection.  We protect against
 					* ANR's, so this can remain to provide a user confirmation
@@ -123,30 +121,28 @@ public class connactiv extends Activity
 			}
 		});
 
-		register.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v)
-			{
-				startActivity(new Intent(getApplicationContext(), register.class));
-			}
-		});
 	}
 
-	private class loginTask extends AsyncTask<String, Void, Integer>
+	private class regTask extends AsyncTask<String, Void, Integer>
 	{
 		protected Integer doInBackground(String... strings)
 		{
 			try {
-				/* stackoverflow question 2999945 */
-				HttpPost post = new HttpPost("http://connactiv.com/test/android/signin.php");
+				HttpPost post = new HttpPost("http://connactiv.com/test/android/register.php");
 				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 				final DefaultHttpClient client = new DefaultHttpClient(post.getParams());
-				//client.setCookieStore(cs);
 
-				List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
-				postParams.add(new BasicNameValuePair("login", "1"));
+				List<NameValuePair> postParams = new ArrayList<NameValuePair>(9);
+				//postParams.add(new BasicNameValuePair("login", "1"));
 				postParams.add(new BasicNameValuePair("username", strings[0]));
-				postParams.add(new BasicNameValuePair("pass", strings[1]));
+				postParams.add(new BasicNameValuePair("firstName", strings[1]));
+				postParams.add(new BasicNameValuePair("lastName", strings[2]));
+				postParams.add(new BasicNameValuePair("city", strings[3]));
+				postParams.add(new BasicNameValuePair("zip", strings[4]));
+				postParams.add(new BasicNameValuePair("phone", strings[5]));
+				postParams.add(new BasicNameValuePair("interests", strings[6]));
+				postParams.add(new BasicNameValuePair("password", strings[7]));
+				postParams.add(new BasicNameValuePair("confirm", strings[8]));
 
 				post.setEntity( new UrlEncodedFormEntity(postParams) );
 
@@ -157,31 +153,21 @@ public class connactiv extends Activity
 				runOnUiThread( new Runnable() {
 					public void run() {
 						pb.setVisibility(View.INVISIBLE); // hide spinner
-						if( resp.contains("Incorrect password"))
-							Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
-						else if ( resp.startsWith("Sorry, that user does not exist in our database.") )
-							Toast.makeText(ctx, "User does not exist.", Toast.LENGTH_SHORT).show();
-						else if ( resp.startsWith("Oops.") )
-							Toast.makeText(ctx, "All fields are required.", Toast.LENGTH_SHORT).show();
-						else
-						{
-							prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
-							SharedPreferences.Editor editor = prefs.edit();
-							editor.putString("userId", resp);
-							editor.commit();
+						if( resp.contains("You did not fill"))
+							Toast.makeText(ctx, resp, Toast.LENGTH_SHORT).show();
+						else if(resp.contains("This email has already been registered"))
+							Toast.makeText(ctx, resp, Toast.LENGTH_SHORT).show();
+						else if(resp.contains("The passwords do not match, please re-enter your information"))
+							Toast.makeText(ctx, resp, Toast.LENGTH_SHORT).show();
 
-							startActivity(new Intent(getApplicationContext(), stream.class));
-							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
-							finish();
-						}
 					}
-					});
+				});
 
-				} catch (Exception e) {
-					Log.i(TAG, "ERROR: " +e.toString());
-				}
-				return 0;
+			} catch (Exception e) {
+				Log.i(TAG, "ERROR: " +e.toString());
 			}
+			return 0;
 		}
+	}
 
 }

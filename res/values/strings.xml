@@ -5,4 +5,13 @@
 	<string name="email">Email Address</string>
 	<string name="password">Password</string>
 	<string name="login">Log In</string>
+	<string name="register">Register</string>
+	<string name="first_name">First Name</string>
+	<string name="last_name">Last Name</string>
+	<string name="city">City</string>
+	<string name="zip">Zip Code</string>
+	<string name="phone_number">Phone Number</string>
+	<string name="bio">About yourself</string>
+	<string name="password_confirm">Confirm password</string>
+	<string name="next_step">Next...</string>
 </resources>

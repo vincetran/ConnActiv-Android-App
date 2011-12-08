@@ -3,8 +3,7 @@
 	package="com.designs_1393.connactiv"
 	android:versionCode="1"
 	android:versionName="1.0">
-	<uses-sdk android:minSdkVersion="7" />
-	<uses-sdk android:targetSdkVersion="11" />
+	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="11" />
 
 	<application android:label="ConnActiv" android:icon="@drawable/icon">
 		<activity android:name="connactiv" android:label="ConnActiv">
@@ -15,6 +14,8 @@
 		</activity>
 
 		<activity android:name="stream" android:label="Stream"/>
+
+		<activity android:name="register" android:label="Register"/>
 
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"/>
