@@ -116,7 +116,7 @@ public class dbAdapter
 	public Cursor fetchAllConnactions()
 	{
 		return mDb.query(CONNACTION_TABLE, new String[] {KEY_POST_TIME, KEY_UID,
-			KEY_LOCATION, KEY_START_DATE, KEY_MESSAGE, KEY_END_DATE, KEY_UNID, "_id"}, null, null, null, null, KEY_CID);
+			KEY_LOCATION, KEY_START_DATE, KEY_MESSAGE, KEY_END_DATE, KEY_UNID, "_id"}, null, null, null, null, KEY_CID + " DESC");
 	}
 
 }
