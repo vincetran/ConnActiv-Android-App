@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.widget.Button;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.util.Log;
 
 // authentication
 // TODO: prune
@@ -45,14 +46,10 @@ import android.os.AsyncTask;
 import java.lang.Void;
 import java.util.concurrent.locks.ReentrantLock;
 
-// DBG
-import android.util.Log;
-
+// XML
 import java.net.URL;
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 

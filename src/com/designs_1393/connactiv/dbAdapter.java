@@ -26,8 +26,8 @@ public class dbAdapter
 	private SQLiteDatabase mDb;
 
 	private static final String DATABASE_CREATE =
-		"create table connaction (connaction_id integer primary key, post_time text not null,"
-		+ " user_id integer not null, location text not null, start_date text not null, "
+		"create table connaction (_id integer primary key autoincrement, connaction_id text not null, post_time text not null,"
+		+ " user_id text not null, location text not null, start_date text not null, "
 		+ " message text not null,  end_date text not null,  unique_network_id text not null, "
 		+ " is_private text not null);";
 
@@ -116,7 +116,7 @@ public class dbAdapter
 	public Cursor fetchAllConnactions()
 	{
 		return mDb.query(CONNACTION_TABLE, new String[] {KEY_POST_TIME, KEY_UID,
-			KEY_LOCATION, KEY_START_DATE, KEY_MESSAGE, KEY_END_DATE, KEY_UNID}, null, null, null, null, KEY_CID);
+			KEY_LOCATION, KEY_START_DATE, KEY_MESSAGE, KEY_END_DATE, KEY_UNID, "_id"}, null, null, null, null, KEY_CID);
 	}
 
 }

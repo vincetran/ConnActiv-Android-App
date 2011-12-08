@@ -1,34 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<TextView android:id="@+id/time"
-		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
-	<TextView android:id="@+id/userID"
-		android:textAppearance="?android:attr/textAppearanceSmall"
+	<TextView android:id="@+id/message"
+		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"/>
 	<TextView android:id="@+id/location"
 		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/message"/>
 	<TextView android:id="@+id/startDate"
 		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/message"
+		android:layout_toRightOf="@id/location"/>
 	<TextView android:id="@+id/endDate"
 		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
-	<TextView android:id="@+id/message"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/message"
+		android:layout_toRightOf="@id/startDate"/>
+	<TextView android:id="@+id/userID"
 		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/location"/>
 	<TextView android:id="@+id/networkID"
 		android:textAppearance="?android:attr/textAppearanceSmall"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/location"
+		android:layout_toRightOf="@id/userID"/>
+	<TextView android:id="@+id/time"
+		android:textAppearance="?android:attr/textAppearanceSmall"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"/>
-</LinearLayout>
+		android:layout_height="wrap_content"
+		android:layout_below="@id/userID"/>
+</RelativeLayout>

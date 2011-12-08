@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
+import android.util.Log;
 
 public class streamAdapter extends CursorAdapter
 {
@@ -44,12 +45,14 @@ public class streamAdapter extends CursorAdapter
 		TextView vMess = (TextView) v.findViewById( R.id.message );
 		TextView vNet  = (TextView) v.findViewById( R.id.networkID );
 
-		vTime.setText(  c.getString( c.getColumnIndexOrThrow( KEY_POST_TIME ) ) );
-		vUser.setText(  c.getString( c.getColumnIndexOrThrow( KEY_UID ) ) );
-		vLoc.setText(   c.getString( c.getColumnIndexOrThrow( KEY_LOCATION ) ) );
-		vStart.setText( c.getString( c.getColumnIndexOrThrow( KEY_START_DATE ) ) );
-		vEnd.setText(   c.getString( c.getColumnIndexOrThrow( KEY_END_DATE ) ) );
-		vMess.setText(  c.getString( c.getColumnIndexOrThrow( KEY_MESSAGE ) ) );
-		vNet.setText(   c.getString( c.getColumnIndexOrThrow( KEY_UNID ) ) );
+		vTime.setText("Post Date: " + c.getString( c.getColumnIndexOrThrow(KEY_POST_TIME )));
+		vUser.setText("User: " + c.getString( c.getColumnIndexOrThrow(KEY_UID )) + "  |  ");
+		vLoc.setText(c.getString(c.getColumnIndexOrThrow(KEY_LOCATION )) + " | ");
+		vStart.setText(c.getString(c.getColumnIndexOrThrow(KEY_START_DATE))+ " | ");
+		vEnd.setText(c.getString(c.getColumnIndexOrThrow(KEY_END_DATE)));
+		vMess.setText(c.getString(c.getColumnIndexOrThrow(KEY_MESSAGE)));
+		vNet.setText("Tag: " + c.getString(c.getColumnIndexOrThrow(KEY_UNID)));
+
+		Log.i("ConnActiv", "STREAM ADAPTER - vUser is: " + vUser.getText());
 	}
 }
