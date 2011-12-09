@@ -146,7 +146,6 @@ public class register extends Activity
 				postParams.add(new BasicNameValuePair("confirm", strings[8]));
 
 				post.setEntity( new UrlEncodedFormEntity(postParams) );
-				Commenting to test the next part
 				BasicResponseHandler brh = new BasicResponseHandler();
 				HttpResponse response = client.execute( post, httpCtx );
 				final String resp = brh.handleResponse( response );				

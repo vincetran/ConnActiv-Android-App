@@ -100,10 +100,10 @@ public class connactiv extends Activity
 			{
 				if( loginLock.tryLock() )
 				{
-					if(email.getText().toString().compareTo("") == 0 || pw.getText().toString().compareTo("") == 0)
+					/*if(email.getText().toString().compareTo("") == 0 || pw.getText().toString().compareTo("") == 0)
 						Toast.makeText(ctx, "All fields are required", Toast.LENGTH_SHORT).show();
 					else
-					{
+					{*/
 						pb.setVisibility(View.VISIBLE); // show spinner
 						loginTask task = new loginTask();
 						task.execute(email.getText().toString(), pw.getText().toString());
@@ -113,7 +113,7 @@ public class connactiv extends Activity
 						} catch (Exception e){
 							Log.i(TAG, "ERROR: " +e.toString());
 						}
-					}
+					//}
 					/* NOTE: it hides so quickly that it never actually
 					* appears, even on a 3G connection.  We protect against
 					* ANR's, so this can remain to provide a user confirmation
@@ -145,8 +145,10 @@ public class connactiv extends Activity
 
 				List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
 				postParams.add(new BasicNameValuePair("login", "1"));
-				postParams.add(new BasicNameValuePair("username", strings[0]));
-				postParams.add(new BasicNameValuePair("pass", strings[1]));
+				//postParams.add(new BasicNameValuePair("username", strings[0]));
+				//postParams.add(new BasicNameValuePair("pass", strings[1]));
+				postParams.add(new BasicNameValuePair("username", "freedom1378@gmail.com"));
+				postParams.add(new BasicNameValuePair("pass", "rawr1378"));
 
 				post.setEntity( new UrlEncodedFormEntity(postParams) );
 
@@ -169,7 +171,7 @@ public class connactiv extends Activity
 							SharedPreferences.Editor editor = prefs.edit();
 							editor.putString("userId", resp);
 							editor.commit();
-
+							Log.i("ConnActiv", "UserId: "+resp);
 							startActivity(new Intent(getApplicationContext(), stream.class));
 							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
 							finish();
@@ -178,7 +180,7 @@ public class connactiv extends Activity
 					});
 
 				} catch (Exception e) {
-					Log.i(TAG, "ERROR: " +e.toString());
+					Log.i(TAG, "CONNACTIV ERROR: " +e.toString());
 				}
 				return 0;
 			}

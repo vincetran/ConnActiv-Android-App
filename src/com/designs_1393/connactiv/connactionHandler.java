@@ -3,7 +3,6 @@ package com.designs_1393.connactiv;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import android.util.Log;
 import android.content.Context;
 
 public class connactionHandler extends DefaultHandler{
@@ -19,6 +18,7 @@ public class connactionHandler extends DefaultHandler{
 	private boolean in_message = false;
 	private boolean in_end_time = false;
 	private boolean in_unique = false;
+	private boolean in_levels = false;
 	private boolean in_private = false;
 
 	private String cid = "";
@@ -29,6 +29,7 @@ public class connactionHandler extends DefaultHandler{
 	private String message = "";
 	private String end_time = "";
 	private String unique = "";
+	private String levels = "";
 	private String is_private = "";
 
 	private dbAdapter mDbHelper;
@@ -76,6 +77,8 @@ public class connactionHandler extends DefaultHandler{
 			this.in_end_time = true;
 		}else if (localName.equals("UNIQUE_NETWORK_ID")) {
 			this.in_unique = true;
+		}else if (localName.equals("LEVELS")){
+			this.in_levels = true;
 		}else if (localName.equals("IS_PRIVATE")) {
 			this.in_private = true;
 		}
@@ -102,6 +105,8 @@ public class connactionHandler extends DefaultHandler{
 			this.in_end_time = false;
 		}else if (localName.equals("UNIQUE_NETWORK_ID")) {
 			this.in_unique = false;
+		}else if (localName.equals("LEVELS")) {
+			this.in_levels = false;
 		}else if (localName.equals("IS_PRIVATE")) {
 			this.in_private = false;
 		}
@@ -143,6 +148,10 @@ public class connactionHandler extends DefaultHandler{
 			myparsedDataSet.setExtString(new String(ch, start, length));
 			unique = myparsedDataSet.toString();
 		}
+		else if(this.in_levels){
+			myparsedDataSet.setExtString(new String(ch, start, length));
+			levels = myparsedDataSet.toString();
+		}
 		else if(this.in_private){
 			mDbHelper = new dbAdapter(ctx);
 			mDbHelper.open();
@@ -151,7 +160,7 @@ public class connactionHandler extends DefaultHandler{
 			is_private = myparsedDataSet.toString();
 
 			mDbHelper.createConnaction(cid, post_time, uid, location, start_time, message, 
-				end_time, unique, is_private);
+				end_time, unique, levels, is_private);
 
 			mDbHelper.close();
 		}

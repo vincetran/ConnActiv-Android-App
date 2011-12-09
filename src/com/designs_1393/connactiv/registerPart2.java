@@ -11,6 +11,9 @@ import android.util.Log;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.content.SharedPreferences;
+import android.content.Intent;
+import android.content.Context;
+import android.widget.Toast;
 
 // authentication
 // TODO: prune
@@ -30,6 +33,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import android.net.http.AndroidHttpClient;
 import java.io.ByteArrayOutputStream;
+import org.apache.http.protocol.BasicHttpContext;
+
 
 // threading
 import android.os.AsyncTask;
@@ -50,7 +55,7 @@ public class registerPart2 extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.registerPart2);
+		setContentView(R.layout.registerpart2);
 		ctx = getApplicationContext();
 
 	}
@@ -59,13 +64,17 @@ public class registerPart2 extends Activity
 	{
 		protected Integer doInBackground(String... strings)
 		{
-			//BRAOIHFOAH WAT?
-			HttpPost getNetworks = new HttpPost("http://connactiv.com/test/android/getNetworks.php");
-			final DefaultHttpClient client2 = new DefaultHttpClient(getNetworks.getParams());
-			BasicResponseHandler brh2 = new BasicResponseHandler();
-			HttpResponse response2 = client2.execute( getNetworks, httpCtx );
-			final String resp2 = brh2.handleResponse( response2 );
-
+			try{
+				HttpPost getNetworks = new HttpPost("http://connactiv.com/test/android/getNetworks.php");
+				final DefaultHttpClient client2 = new DefaultHttpClient(getNetworks.getParams());
+				BasicResponseHandler brh2 = new BasicResponseHandler();
+				HttpResponse response2 = client2.execute( getNetworks, httpCtx );
+				final String resp2 = brh2.handleResponse( response2 );
+			}catch(Exception e)
+			{
+				
+			}
+			return 0;
 		}	
 	}
 }

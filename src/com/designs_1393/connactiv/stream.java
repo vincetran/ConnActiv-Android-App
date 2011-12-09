@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.database.Cursor;
 import android.content.Intent;
@@ -15,11 +16,18 @@ import java.lang.String;
 import java.util.concurrent.locks.ReentrantLock;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
+import android.widget.Toast;
+import android.widget.ListView;
+import android.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.content.DialogInterface;
 
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.util.Log;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 //HTTP Stuff
 import android.widget.ProgressBar;
@@ -49,6 +57,8 @@ public class stream extends ListActivity
 	private dbAdapter dbHelper;
 	private Cursor connCursor;
 	private SharedPreferences prefs;
+	private DateFormat oldDF = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
+	private DateFormat newDF = new SimpleDateFormat("MM'/'dd'/'yy' @ 'HH:mm");
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -67,6 +77,45 @@ public class stream extends ListActivity
 
 		fillData();
 	}
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id)
+	{
+		super.onListItemClick(l, v, position, id);
+		Cursor c = connCursor;
+		c.moveToPosition(position);
+
+		AlertDialog.Builder builder;
+		LayoutInflater inflater = (LayoutInflater) (this).getSystemService(LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.connaction_dialog,
+			(ViewGroup) findViewById(R.id.layout_root));
+
+		TextView message = (TextView) layout.findViewById(R.id.message);
+		message.setText(c.getString(c.getColumnIndexOrThrow(dbAdapter.KEY_MESSAGE)));
+		TextView date = (TextView) layout.findViewById(R.id.date);
+		try{
+			date.setText(newDF.format(oldDF.parse(c.getString(c.getColumnIndexOrThrow(dbAdapter.KEY_START_DATE))) ) +
+				 " until " + newDF.format(oldDF.parse( c.getString(c.getColumnIndexOrThrow(dbAdapter.KEY_END_DATE)))));
+		}catch(Exception e) {Log.i("ConnActiv", "Error with parsing date: "+ e);}
+		TextView location = (TextView) layout.findViewById(R.id.location);
+		location.setText(c.getString(c.getColumnIndexOrThrow(dbAdapter.KEY_LOCATION)));
+		TextView levels = (TextView) layout.findViewById(R.id.levels);
+
+		String[] allLevels = c.getString(c.getColumnIndexOrThrow(dbAdapter.KEY_LEVELS)).split("|");
+		levels.setText("Level "+allLevels[7]+", seeking level "+allLevels[5]+", but I'm cool with levels "+allLevels[1]+"-"+allLevels[3]+".");
+
+		builder = new AlertDialog.Builder(this);
+		builder.setView(layout);
+		builder.setIcon(R.drawable.icon);
+		builder.setTitle("ConnAction with "+ c.getString(c.getColumnIndexOrThrow(dbAdapter.KEY_UID)));
+		builder.setPositiveButton("Back", 
+			new android.content.DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int arg1) {
+				}
+			});
+		builder.show();
+	}
+
 
 	@Override
 	protected void onStop()
@@ -152,15 +201,16 @@ public class stream extends ListActivity
 
 					xr.setContentHandler(caHandler);
 					xr.parse(new InputSource(url.openStream()));
-
+					/*
 					HttpClient httpclient = new DefaultHttpClient();
 					HttpPost hp = new HttpPost("http://connactiv.com/test/android/deleteXML.php");
 					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
 					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
 					hp.setEntity( new UrlEncodedFormEntity(postParams) );
 					httpclient.execute(hp); 
+					*/
 				}catch(Exception e){
-					Log.i("ConnActiv", "ERRRRROR: " + e);
+					Log.i("ConnActiv", "STREAM ERRRRROR: " + e);
 				}
 			}
 			return 0;
