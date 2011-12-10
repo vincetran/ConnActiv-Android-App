@@ -16,6 +16,7 @@ import java.lang.String;
 import java.util.concurrent.locks.ReentrantLock;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.widget.Toast;
 import android.widget.ListView;
 import android.app.AlertDialog;
@@ -54,11 +55,17 @@ import java.net.URL;
 
 public class stream extends ListActivity
 {
+	final String TAG = "ConnActiv";
 	private dbAdapter dbHelper;
 	private Cursor connCursor;
 	private SharedPreferences prefs;
 	private DateFormat oldDF = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
 	private DateFormat newDF = new SimpleDateFormat("MM'/'dd'/'yy' @ 'HH:mm");
+	private ProgressBar pb;
+	private static final String generate = "generate";
+	private static final String pull = "pull";
+	private String messageXml = "";
+	private ReentrantLock lock = new ReentrantLock();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -66,7 +73,41 @@ public class stream extends ListActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.stream);
 
+		prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
+		if(prefs.getString("userId","error").compareTo("error") == 0)
+		{
+			startActivity(new Intent(getApplicationContext(), connactiv.class));
+			finish();
+		}
+			
 		parseXml();
+
+	}
+
+	public void parseXml()
+	{	
+		if( lock.tryLock() )
+		{
+			genXml gen = new genXml();
+			gen.execute(generate);
+
+			try {
+				lock.unlock();
+			} catch (Exception e){
+				Log.i(TAG, "ERROR: " +e.toString());
+			}
+		}
+
+		if( lock.tryLock() )
+		{
+			genXml pullXml = new genXml();
+			pullXml.execute(pull);
+			try {
+				lock.unlock();
+			} catch (Exception e){
+				Log.i(TAG, "ERROR: " +e.toString());
+			}
+		}
 
 		// create database
 		dbHelper = new dbAdapter(this);
@@ -76,6 +117,58 @@ public class stream extends ListActivity
 		connCursor = dbHelper.fetchAllConnactions();
 
 		fillData();
+
+	}
+
+	private class genXml extends AsyncTask<String, Void, Integer>
+	{
+		protected Integer doInBackground(String... params)
+		{
+			prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
+			if(params[0].compareTo("generate") == 0)
+			{
+				String resp = "";
+				try{
+					
+
+					HttpClient httpclient = new DefaultHttpClient();
+					HttpPost hp = new HttpPost("http://connactiv.com/test/android/genXML.php");
+
+					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
+					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
+					hp.setEntity( new UrlEncodedFormEntity(postParams) );
+
+					httpclient.execute(hp); 
+				}catch(Exception e){
+					Log.e("Connactiv", "Error: "+e);
+				}
+				return 0;
+			}
+			else{
+				try{
+					URL url = new URL("http://connactiv.com/test/android/"+prefs.getString("userId","error")+"connactionDb.xml");
+
+					SAXParserFactory spf = SAXParserFactory.newInstance();
+					SAXParser sp = spf.newSAXParser();
+					XMLReader xr = sp.getXMLReader();
+					connactionHandler caHandler = new connactionHandler();
+					caHandler.setContext(getApplicationContext());
+
+					xr.setContentHandler(caHandler);
+					xr.parse(new InputSource(url.openStream()));
+					//Used to delete the generated XML file
+					HttpClient httpclient = new DefaultHttpClient();
+					HttpPost hp = new HttpPost("http://connactiv.com/test/android/deleteXML.php");
+					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
+					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
+					hp.setEntity( new UrlEncodedFormEntity(postParams) );
+					httpclient.execute(hp); 					
+				}catch(Exception e){
+					Log.i("ConnActiv", "STREAM ERRRRROR: " + e);
+				}
+				return 0;
+			}
+		}
 	}
 
 	@Override
@@ -150,71 +243,17 @@ public class stream extends ListActivity
 		setListAdapter(sAdapter);
 	}
 
-	private ProgressBar pb;
-	private static final String generate = "generate";
-	private static final String pull = "pull";
-	private String messageXml = "";
-
-	public void parseXml()
+	public void logout()
 	{
-		genXml gen = new genXml();
-		gen.execute(generate);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.remove("userId");
+		editor.commit();
 
-		genXml pullXml = new genXml();
-		pullXml.execute(pull);
+		dbHelper.abandonShip();
+		dbHelper.close();
 
-	}
-
-	private class genXml extends AsyncTask<String, Void, Integer>
-	{
-		protected Integer doInBackground(String... params)
-		{
-			if(params[0].compareTo("generate") == 0)
-			{
-				String resp = "";
-				try{
-					prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
-
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost hp = new HttpPost("http://connactiv.com/test/android/genXML.php");
-
-					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
-					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
-					hp.setEntity( new UrlEncodedFormEntity(postParams) );
-
-					httpclient.execute(hp); 
-
-				}catch(Exception e){
-					Log.e("Connactiv", "Error: "+e);
-				}
-			}
-			else if(params[0].compareTo("pull")==0){
-				try{
-					prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
-					URL url = new URL("http://connactiv.com/test/android/"+prefs.getString("userId","error")+"connactionDb.xml");
-
-					SAXParserFactory spf = SAXParserFactory.newInstance();
-					SAXParser sp = spf.newSAXParser();
-					XMLReader xr = sp.getXMLReader();
-					connactionHandler caHandler = new connactionHandler();
-					caHandler.setContext(getApplicationContext());
-
-					xr.setContentHandler(caHandler);
-					xr.parse(new InputSource(url.openStream()));
-					/*
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost hp = new HttpPost("http://connactiv.com/test/android/deleteXML.php");
-					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
-					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
-					hp.setEntity( new UrlEncodedFormEntity(postParams) );
-					httpclient.execute(hp); 
-					*/
-				}catch(Exception e){
-					Log.i("ConnActiv", "STREAM ERRRRROR: " + e);
-				}
-			}
-			return 0;
-		}
+		startActivity(new Intent(getApplicationContext(), connactiv.class));
+		finish();
 	}
 
 	@Override
@@ -233,6 +272,9 @@ public class stream extends ListActivity
 			case R.id.menu_refresh:
 				parseXml();
 				fillData();
+				return true;
+			case R.id.menu_logout:
+				logout();
 				return true;
 		}
 		return super.onMenuItemSelected(featureId, item);

@@ -166,7 +166,8 @@ public class register extends Activity
 							editor.putString("userId", resp);
 							editor.commit();
 
-							startActivity(new Intent(getApplicationContext(), registerPart2.class));
+							startActivity(new Intent(getApplicationContext(), stream.class));
+							Toast.makeText(getApplicationContext(), "Please subscribe to networks on the website at ConnActiv.com", Toast.LENGTH_SHORT).show();
 							finish();
 						}
 					}

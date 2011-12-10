@@ -100,10 +100,10 @@ public class connactiv extends Activity
 			{
 				if( loginLock.tryLock() )
 				{
-					/*if(email.getText().toString().compareTo("") == 0 || pw.getText().toString().compareTo("") == 0)
+					if(email.getText().toString().compareTo("") == 0 || pw.getText().toString().compareTo("") == 0)
 						Toast.makeText(ctx, "All fields are required", Toast.LENGTH_SHORT).show();
 					else
-					{*/
+					{
 						pb.setVisibility(View.VISIBLE); // show spinner
 						loginTask task = new loginTask();
 						task.execute(email.getText().toString(), pw.getText().toString());
@@ -113,7 +113,7 @@ public class connactiv extends Activity
 						} catch (Exception e){
 							Log.i(TAG, "ERROR: " +e.toString());
 						}
-					//}
+					}
 					/* NOTE: it hides so quickly that it never actually
 					* appears, even on a 3G connection.  We protect against
 					* ANR's, so this can remain to provide a user confirmation
@@ -128,14 +128,17 @@ public class connactiv extends Activity
 			public void onClick(View v)
 			{
 				startActivity(new Intent(getApplicationContext(), register.class));
+				finish();
 			}
 		});
 	}
 
 	private class loginTask extends AsyncTask<String, Void, Integer>
 	{
+		private int result;
 		protected Integer doInBackground(String... strings)
 		{
+			result = 0;
 			try {
 				/* stackoverflow question 2999945 */
 				HttpPost post = new HttpPost("http://connactiv.com/test/android/signin.php");
@@ -145,20 +148,17 @@ public class connactiv extends Activity
 
 				List<NameValuePair> postParams = new ArrayList<NameValuePair>(3);
 				postParams.add(new BasicNameValuePair("login", "1"));
-				//postParams.add(new BasicNameValuePair("username", strings[0]));
-				//postParams.add(new BasicNameValuePair("pass", strings[1]));
-				postParams.add(new BasicNameValuePair("username", "freedom1378@gmail.com"));
-				postParams.add(new BasicNameValuePair("pass", "rawr1378"));
+				postParams.add(new BasicNameValuePair("username", strings[0]));
+				postParams.add(new BasicNameValuePair("pass", strings[1]));
 
 				post.setEntity( new UrlEncodedFormEntity(postParams) );
 
 				BasicResponseHandler brh = new BasicResponseHandler();
 				HttpResponse response = client.execute( post, httpCtx );
 				final String resp = brh.handleResponse( response );
-
 				runOnUiThread( new Runnable() {
 					public void run() {
-						pb.setVisibility(View.INVISIBLE); // hide spinner
+						pb.setVisibility(View.INVISIBLE); // hide spinner*/
 						if( resp.contains("Incorrect password"))
 							Toast.makeText(ctx, "Incorrect password.", Toast.LENGTH_SHORT).show();
 						else if ( resp.startsWith("Sorry, that user does not exist in our database.") )
@@ -172,18 +172,32 @@ public class connactiv extends Activity
 							editor.putString("userId", resp);
 							editor.commit();
 							Log.i("ConnActiv", "UserId: "+resp);
+							result = 1;
 							startActivity(new Intent(getApplicationContext(), stream.class));
-							Toast.makeText(ctx, "Welcome to ConnActiv, " +email.getText().toString().split("@")[0] +"!", Toast.LENGTH_SHORT).show();
 							finish();
 						}
 					}
 					});
-
-				} catch (Exception e) {
-					Log.i(TAG, "CONNACTIV ERROR: " +e.toString());
-				}
-				return 0;
+			} catch (Exception e) {
+				Log.i(TAG, "CONNACTIV ERROR: " +e.toString());
 			}
+			return result;
 		}
+
+		// protected void onPostExecute(Integer result)
+		// {
+		// 	if(result.intValue() == 1)
+		// 	{
+		// 		Log.i("ConnActiv", "RESULT IS OOOOOOONE");	
+		// 		startActivity(new Intent(getApplicationContext(), stream.class));
+		// 		finish();
+		// 	}
+		// 	Log.i("ConnActiv", "onPost:::: " + result.intValue());
+		// 	prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
+		// 	SharedPreferences.Editor editor = prefs.edit();
+		// 	editor.remove("userId");
+		// 	editor.commit();
+		// }
+	}
 
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<view class="com.designs_1393.connactiv.network_list_item"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal">
+	
+	<CheckBox android:id="@+id/listCheckBox" 
+		android:layout_width="wrap_content" 
+		android:layout_height="match_parent" 
+		android:focusable="false"
+		android:clickable="false"
+		android:gravity="center_vertical"
+		android:paddingRight="5dp" />
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/innerLayout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:focusable="false"
+		android:orientation="vertical">
+	
+		<TextView android:id="@+id/network_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:focusable="false"
+			android:gravity="top"
+			android:singleLine="false"/>			
+	</LinearLayout>
+</view>

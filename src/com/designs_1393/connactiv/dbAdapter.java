@@ -54,6 +54,16 @@ public class dbAdapter
 	}
 
 	/**
+	 * Deletes all elements in the database, but does not delete the database itself.
+	 *
+	 * @return	True if any items are deleted, false otherwise.
+	 */	
+	public boolean abandonShip()
+	{
+		return mDb.delete(CONNACTION_TABLE, null, null) > 0;
+	}
+
+	/**
 	 * Inner class providing a database upgrade process.
 	 */
 	private static class DatabaseHelper extends SQLiteOpenHelper

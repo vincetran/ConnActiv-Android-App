@@ -6,17 +6,16 @@
 	<uses-sdk android:minSdkVersion="7" android:targetSdkVersion="11" />
 
 	<application android:label="ConnActiv" android:icon="@drawable/icon">
-		<activity android:name="connactiv" android:label="ConnActiv">
+		<activity android:name="connactiv" android:label="ConnActiv"></activity>
+
+		<activity android:name="stream" android:label="ConnActiv">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
 
-		<activity android:name="stream" android:label="Stream"/>
-
 		<activity android:name="register" android:label="Register"/>
-
 	</application>
 	<uses-permission android:name="android.permission.INTERNET"/>
 </manifest>
