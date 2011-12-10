@@ -162,7 +162,14 @@ public class stream extends ListActivity
 					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
 					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
 					hp.setEntity( new UrlEncodedFormEntity(postParams) );
-					httpclient.execute(hp); 					
+					httpclient.execute(hp);
+
+					runOnUiThread(new Runnable()  {
+						public void run() {
+							Log.i("ConnActiv", "Done parse!");
+							fillData();
+						}
+					});
 				}catch(Exception e){
 					Log.i("ConnActiv", "STREAM ERRRRROR: " + e);
 				}
