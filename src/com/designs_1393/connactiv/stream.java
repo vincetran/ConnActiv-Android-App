@@ -20,6 +20,7 @@ import android.content.SharedPreferences.Editor;
 import android.widget.Toast;
 import android.widget.ListView;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.view.LayoutInflater;
 import android.content.DialogInterface;
 
@@ -61,11 +62,12 @@ public class stream extends ListActivity
 	private SharedPreferences prefs;
 	private DateFormat oldDF = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss");
 	private DateFormat newDF = new SimpleDateFormat("MM'/'dd'/'yy' @ 'HH:mm");
-	private ProgressBar pb;
 	private static final String generate = "generate";
 	private static final String pull = "pull";
 	private String messageXml = "";
 	private ReentrantLock lock = new ReentrantLock();
+
+	private ProgressDialog pd;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -79,13 +81,14 @@ public class stream extends ListActivity
 			startActivity(new Intent(getApplicationContext(), connactiv.class));
 			finish();
 		}
-			
+		pd = ProgressDialog.show(this, "",
+                        "Loading. Please wait...", true);
 		parseXml();
 
 	}
 
 	public void parseXml()
-	{	
+	{
 		if( lock.tryLock() )
 		{
 			genXml gen = new genXml();
@@ -129,7 +132,7 @@ public class stream extends ListActivity
 			{
 				String resp = "";
 				try{
-					
+
 
 					HttpClient httpclient = new DefaultHttpClient();
 					HttpPost hp = new HttpPost("http://connactiv.com/test/android/genXML.php");
@@ -138,7 +141,7 @@ public class stream extends ListActivity
 					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
 					hp.setEntity( new UrlEncodedFormEntity(postParams) );
 
-					httpclient.execute(hp); 
+					httpclient.execute(hp);
 				}catch(Exception e){
 					Log.e("Connactiv", "Error: "+e);
 				}
@@ -168,6 +171,7 @@ public class stream extends ListActivity
 						public void run() {
 							Log.i("ConnActiv", "Done parse!");
 							fillData();
+							pd.dismiss();
 						}
 					});
 				}catch(Exception e){
@@ -208,7 +212,7 @@ public class stream extends ListActivity
 		builder.setView(layout);
 		builder.setIcon(R.drawable.icon);
 		builder.setTitle("ConnAction with "+ c.getString(c.getColumnIndexOrThrow(dbAdapter.KEY_UID)));
-		builder.setPositiveButton("Back", 
+		builder.setPositiveButton("Back",
 			new android.content.DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int arg1) {
 				}
