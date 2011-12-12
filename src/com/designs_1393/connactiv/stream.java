@@ -90,8 +90,7 @@ public class stream extends ListActivity
 			startActivity(new Intent(getApplicationContext(), connactiv.class));
 			finish();
 		}
-		pd = ProgressDialog.show(this, "",
-                        "Loading. Please wait...", true);
+
 		parseXml();
 
 	}
@@ -104,28 +103,15 @@ public class stream extends ListActivity
 			if( pd.isShowing() )
 				pd.dismiss();
 			pullXml.cancel(true);
-
-
-			runOnUiThread(new Runnable()  {
-				public void run() {
-					AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-					builder.setMessage("Unfortunately, getting your ConnActions took too long.")
-					       .setCancelable(false)
-					       .setPositiveButton("That sucks.", new DialogInterface.OnClickListener() {
-					           public void onClick(DialogInterface dialog, int id) {
-					                dialog.cancel();
-					           }
-					       });
-					AlertDialog alert = builder.create();
-				}
-			});
+			Toast.makeText(ctx, "Unfortunately, getting your ConnActions took too long. :(", Toast.LENGTH_SHORT).show();
 		}
 	};
 
 
 	public void parseXml()
 	{
-
+		pd = ProgressDialog.show(this, "",
+                        "Loading. Please wait...", true);
 		if( lock.tryLock() )
 		{
 			genXml gen = new genXml();
@@ -141,7 +127,7 @@ public class stream extends ListActivity
 		if( lock.tryLock() )
 		{
 			timeoutHandler.removeCallbacks(timeoutTask);
-			timeoutHandler.postDelayed(timeoutTask, 3);
+			timeoutHandler.postDelayed(timeoutTask, 3000);
 
 			pullXml = new genXml();
 			pullXml.execute(pull);
