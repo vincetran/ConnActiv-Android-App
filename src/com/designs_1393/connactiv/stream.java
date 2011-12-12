@@ -20,7 +20,6 @@ import android.content.SharedPreferences.Editor;
 import android.widget.Toast;
 import android.widget.ListView;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.view.LayoutInflater;
 import android.content.DialogInterface;
 
@@ -30,6 +29,11 @@ import android.view.MenuInflater;
 import android.util.Log;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
+//Progress dialog & timeout
+import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
+import android.os.Handler;
 
 //HTTP Stuff
 import android.widget.ProgressBar;
@@ -68,12 +72,17 @@ public class stream extends ListActivity
 	private ReentrantLock lock = new ReentrantLock();
 
 	private ProgressDialog pd;
+	private Handler timeoutHandler = new Handler();
+	private genXml pullXml;
+	private Context ctx;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.stream);
+
+		ctx = getApplicationContext();
 
 		prefs = getSharedPreferences("connactivPrefs", Activity.MODE_PRIVATE);
 		if(prefs.getString("userId","error").compareTo("error") == 0)
@@ -87,8 +96,36 @@ public class stream extends ListActivity
 
 	}
 
+	private Runnable timeoutTask = new Runnable()
+	{
+		public void run()
+		{
+			Log.i(TAG, "Timeout!");
+			if( pd.isShowing() )
+				pd.dismiss();
+			pullXml.cancel(true);
+
+
+			runOnUiThread(new Runnable()  {
+				public void run() {
+					AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+					builder.setMessage("Unfortunately, getting your ConnActions took too long.")
+					       .setCancelable(false)
+					       .setPositiveButton("That sucks.", new DialogInterface.OnClickListener() {
+					           public void onClick(DialogInterface dialog, int id) {
+					                dialog.cancel();
+					           }
+					       });
+					AlertDialog alert = builder.create();
+				}
+			});
+		}
+	};
+
+
 	public void parseXml()
 	{
+
 		if( lock.tryLock() )
 		{
 			genXml gen = new genXml();
@@ -103,7 +140,10 @@ public class stream extends ListActivity
 
 		if( lock.tryLock() )
 		{
-			genXml pullXml = new genXml();
+			timeoutHandler.removeCallbacks(timeoutTask);
+			timeoutHandler.postDelayed(timeoutTask, 3);
+
+			pullXml = new genXml();
 			pullXml.execute(pull);
 			try {
 				lock.unlock();
@@ -118,9 +158,6 @@ public class stream extends ListActivity
 		// open database
 		dbHelper.open();
 		connCursor = dbHelper.fetchAllConnactions();
-
-		fillData();
-
 	}
 
 	private class genXml extends AsyncTask<String, Void, Integer>
@@ -166,14 +203,18 @@ public class stream extends ListActivity
 					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
 					hp.setEntity( new UrlEncodedFormEntity(postParams) );
 					httpclient.execute(hp);
+					timeoutHandler.removeCallbacks(timeoutTask);
 
-					runOnUiThread(new Runnable()  {
-						public void run() {
-							Log.i("ConnActiv", "Done parse!");
-							fillData();
-							pd.dismiss();
-						}
-					});
+					if( !isCancelled() )
+					{
+						runOnUiThread(new Runnable()  {
+							public void run() {
+								Log.i("ConnActiv", "Done parse!");
+								fillData();
+								pd.dismiss();
+							}
+						});
+					}
 				}catch(Exception e){
 					Log.i("ConnActiv", "STREAM ERRRRROR: " + e);
 				}
