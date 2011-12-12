@@ -141,7 +141,7 @@ public class connactiv extends Activity
 			result = 0;
 			try {
 				/* stackoverflow question 2999945 */
-				HttpPost post = new HttpPost("http://connactiv.com/test/android/signin.php");
+				HttpPost post = new HttpPost("http://connactiv.com/android/signin.php");
 				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 				final DefaultHttpClient client = new DefaultHttpClient(post.getParams());
 				//client.setCookieStore(cs);

@@ -130,7 +130,7 @@ public class register extends Activity
 		protected Integer doInBackground(String... strings)
 		{
 			try {
-				HttpPost post = new HttpPost("http://connactiv.com/test/android/register.php");
+				HttpPost post = new HttpPost("http://connactiv.com/android/register.php");
 				post.getParams().setParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
 				final DefaultHttpClient client = new DefaultHttpClient(post.getParams());
 

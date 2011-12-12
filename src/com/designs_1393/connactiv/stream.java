@@ -90,8 +90,8 @@ public class stream extends ListActivity
 			startActivity(new Intent(getApplicationContext(), connactiv.class));
 			finish();
 		}
-
-		parseXml();
+		else
+			parseXml();
 
 	}
 
@@ -158,7 +158,7 @@ public class stream extends ListActivity
 
 
 					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost hp = new HttpPost("http://connactiv.com/test/android/genXML.php");
+					HttpPost hp = new HttpPost("http://connactiv.com/android/genXML.php");
 
 					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
 					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
@@ -172,7 +172,7 @@ public class stream extends ListActivity
 			}
 			else{
 				try{
-					URL url = new URL("http://connactiv.com/test/android/"+prefs.getString("userId","error")+"connactionDb.xml");
+					URL url = new URL("http://connactiv.com/android/"+prefs.getString("userId","error")+"connactionDb.xml");
 
 					SAXParserFactory spf = SAXParserFactory.newInstance();
 					SAXParser sp = spf.newSAXParser();
@@ -184,7 +184,7 @@ public class stream extends ListActivity
 					xr.parse(new InputSource(url.openStream()));
 					//Used to delete the generated XML file
 					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost hp = new HttpPost("http://connactiv.com/test/android/deleteXML.php");
+					HttpPost hp = new HttpPost("http://connactiv.com/android/deleteXML.php");
 					List<NameValuePair> postParams = new ArrayList<NameValuePair>(1);
 					postParams.add(new BasicNameValuePair("userId", prefs.getString("userId","error")));
 					hp.setEntity( new UrlEncodedFormEntity(postParams) );
